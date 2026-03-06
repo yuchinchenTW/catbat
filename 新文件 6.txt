@@ -1,0 +1,22 @@
+adb -s emulator-5554 shell su 0 settings put global auto_time 0
+
+for /f %i in ('powershell -NoProfile -Command "(Get-Date).AddDays(-2).ToString('MMddHHmmyyyy.ss')"') do adb -s emulator-5554 shell su 0 date %i
+
+adb -s emulator-5554 shell su 0 settings put global auto_time 1
+
+
+
+
+
+
+開啟貓
+adb shell monkey -p jp.co.ponos.battlecatstw -c android.intent.category.LAUNCHER 1
+關閉
+adb shell am force-stop jp.co.ponos.battlecatstw
+
+
+
+
+開啟no root firewall
+
+adb -s emulator-5554 shell monkey -p app.greyshirts.firewall -c android.intent.category.LAUNCHER 1
