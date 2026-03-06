@@ -29,12 +29,15 @@ def build_image_map() -> dict[str, str]:
         "DODO": BASE_DIR / "dodo.png",
         "GOLD": BASE_DIR / "gold.png",
         "RESULT0": BASE_DIR / "result0.png",
+        "RESULT0-1": BASE_DIR / "result0-1.png",
         "RESULT": BASE_DIR / "result.png",
         "RESULT1": BASE_DIR / "result1.png",
         "RESULT2": BASE_DIR / "result2.png",
         "RESULT3": BASE_DIR / "result3.png",
+        "RESULT4": BASE_DIR / "result4.png",
         "MAP": BASE_DIR / "map.png",
         "TRAVEL": BASE_DIR / "travel.png",
+        "YES": BASE_DIR / "yes.png",
         "YES": BASE_DIR / "yes.png",
     }
 
@@ -195,13 +198,16 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
     tail_steps = [
         ("GOLD", 5.0),
         ("RESULT0", 5.0),
+        ("RESULT0-1", 1.0),
         ("RESULT", 5.0),
         ("RESULT1", 5.0),
         ("RESULT2", 1.0),
         ("RESULT3", 1.0),
+        ("RESULT4", 1.0),
         ("MAP", 5.0),
         ("TRAVEL", 5.0),
         ("YES", 5.0),
+        ("YES", 1.0),
     ]
 
     try:
@@ -312,7 +318,7 @@ def main() -> None:
     pyautogui.FAILSAFE = True
     print("tip: move mouse to top-left corner quickly to abort.")
 
-    for i in range(1, 11):
+    for i in range(1, 1100):
         ok = run_cycle(images, i)
         if not ok:
             print(f"stop: aborted at cycle {i}.")
