@@ -154,12 +154,14 @@ def wait_until_detect_then_delay_click_with_timeout(
         f"[{label}] waiting for detect (timeout={timeout_sec}s), then click after {delay_before_click_sec}s..."
     )
     deadline = time.monotonic() + timeout_sec
+    detect_point = None
     while time.monotonic() < deadline:
         point = locate_center(image_path)
         if point is not None:
+            detect_point = point
             print(f"[{label}] detected at: {point}")
             time.sleep(delay_before_click_sec)
-            click_target = point if reuse_detect_point else (locate_center(image_path) or point)
+            click_target = detect_point if reuse_detect_point else (locate_center(image_path) or detect_point)
             click_point(click_target, **click_kwargs)
             print(f"[{label}] clicked at: {click_target}")
             return True
@@ -195,6 +197,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
     strong_single = {"clicks": 1, "hold": 0.05}
     gold_click = {"clicks": 3, "hold": 0.08, "interval": 0.08}
     triple_dodo = {"clicks": 3, "interval": 0.5, "hold": 0.02}
+    heavy_startm = {"clicks": 2, "hold": 0.1, "interval": 0.05}
 
     tail_steps = [
         ("GOLD", 7.0, gold_click),
@@ -241,9 +244,9 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             images["SKIP"], "SKIP-CLICK-2", delay_before_click_sec=0.3, timeout_sec=1
         )
 
-        # 8 (use first-detect point to avoid drift)
+        # 8 (stronger double-click, reuse first detect)
         wait_until_detect_then_delay_click_with_timeout(
-            images["STARTM"], "STARTM", delay_before_click_sec=0.5, timeout_sec=3.0, reuse_detect_point=True
+            images["STARTM"], "STARTM", delay_before_click_sec=0.3, timeout_sec=4.0, click_kwargs=heavy_startm, reuse_detect_point=True
         )
 
         # 9
