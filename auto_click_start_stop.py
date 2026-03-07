@@ -239,6 +239,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         launch_package(GAME_PACKAGE)
 
         # 7
+        time.sleep(1)
         wait_until_detect_and_click(images["SKIP"], "SKIP-CLICK-2")
 
         # 8 (if miss, just skip)
