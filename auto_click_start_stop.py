@@ -34,6 +34,8 @@ def build_image_map() -> dict[str, str]:
         "RESULT1": BASE_DIR / "result1.png",
         "RESULT2": BASE_DIR / "result2.png",
         "RESULT3": BASE_DIR / "result3.png",
+        "RESULT3": BASE_DIR / "result3.png",
+        "RESULT3": BASE_DIR / "result3.png",
         "RESULT4": BASE_DIR / "result4.png",
         "MAP": BASE_DIR / "map.png",
         "TRAVEL": BASE_DIR / "travel.png",
@@ -196,18 +198,20 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
     # per-step timeouts for tail sequence
     tail_steps = [
-        ("GOLD", 5.0),
-        ("RESULT0", 5.0),
-        ("RESULT0-1", 1.0),
-        ("RESULT", 5.0),
-        ("RESULT1", 5.0),
-        ("RESULT2", 1.0),
-        ("RESULT3", 1.0),
-        ("RESULT4", 1.0),
-        ("MAP", 5.0),
-        ("TRAVEL", 5.0),
-        ("YES", 5.0),
-        ("YES", 1.0),
+        ("GOLD", 7.0),
+        ("RESULT0", 1),
+        ("RESULT0-1", 1),
+        ("RESULT", 7.0),
+        ("RESULT1", 0.3),
+        ("RESULT2", 0.3),
+        ("RESULT3", 0.3),
+        ("RESULT3", 0.3),
+        ("RESULT3", 0.3),
+        ("RESULT4", 0.3),
+        ("MAP", 3),
+        ("TRAVEL", 3),
+        ("YES", 1.2),
+        ("YES", 1.2),
     ]
 
     try:
@@ -216,12 +220,12 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         run_adb(["shell", "su", "0", "settings", "put", "global", "auto_time", "0"])
 
         # 2
-        time.sleep(0.5)
+        time.sleep(0.1)
         adb_date = (datetime.now() - timedelta(days=2)).strftime("%m%d%H%M%Y.%S")
         run_adb(["shell", "su", "0", "date", adb_date])
 
         # 3
-        time.sleep(0.5)
+        time.sleep(0.1)
         launch_package(GAME_PACKAGE)
 
         # 4
@@ -239,17 +243,17 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
         # 8 (if miss, just skip)
         wait_until_detect_then_delay_click_with_timeout(
-            images["STARTM"], "STARTM", delay_before_click_sec=1.0, timeout_sec=5.0
+            images["STARTM"], "STARTM", delay_before_click_sec=0.5, timeout_sec=5.0
         )
 
         # 9
-        time.sleep(0.5)
+        time.sleep(0.1)
         wait_until_detect_then_delay_click_with_timeout(
             images["WORLDM"], "WORLDM", delay_before_click_sec=0.0, timeout_sec=2.0
         )
 
         # 10 (stop program if miss)
-        time.sleep(0.5)
+        time.sleep(0.1)
         if not wait_until_detect_then_delay_click_with_timeout(
             images["WORLDM2"], "WORLDM2", delay_before_click_sec=0.0, timeout_sec=2.0
         ):
@@ -259,51 +263,56 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         # 11 (skip on miss)
         time.sleep(0.5)
         wait_until_detect_then_delay_click_with_timeout(
-            images["CROSS"], "CROSS", delay_before_click_sec=1.0, timeout_sec=2.5
+            images["CROSS"], "CROSS", delay_before_click_sec=0.3, timeout_sec=3
+        )
+
+        time.sleep(0.5)
+        wait_until_detect_then_delay_click_with_timeout(
+            images["CROSS"], "CROSS", delay_before_click_sec=0.3, timeout_sec=3
         )
 
         # 12 (stop program if miss)
-        time.sleep(0.5)
+        time.sleep(0.1)
         if not wait_until_detect_then_delay_click_with_timeout(
-            images["DODO"], "DODO-TRIPLE", delay_before_click_sec=1.5, timeout_sec=5.0, click_kwargs=triple_dodo
+            images["DODO"], "DODO-TRIPLE", delay_before_click_sec=0.6, timeout_sec=2.0, click_kwargs=triple_dodo
         ):
             print("stop: DODO (first) not detected in time.")
             return False
 
         # 13 (skip on miss; timeout 1s per spec)
-        time.sleep(0.5)
+        time.sleep(0.1)
         wait_until_detect_then_delay_click_with_timeout(
             images["DODO"], "DODO-ONCE", delay_before_click_sec=0.5, timeout_sec=1.0
         )
 
         # 14
-        time.sleep(1.0)
+        time.sleep(0.1)
         launch_package(FIREWALL_PACKAGE)
 
         # 15
-        time.sleep(1.0)
+        time.sleep(0.1)
         run_adb(["shell", "su", "0", "settings", "put", "global", "auto_time", "1"])
 
         # 16
-        time.sleep(1.0)
+        time.sleep(0.3)
         launch_package(GAME_PACKAGE)
 
         # 17
-        time.sleep(0.5)
+        time.sleep(1)
         launch_package(FIREWALL_PACKAGE)
 
         # 18
         wait_until_detect_and_click(images["START_RED"], "START-RED")
 
         # 19
-        time.sleep(1.0)
+        time.sleep(0.1)
         launch_package(GAME_PACKAGE)
 
         # 20-28 (mostly skip on miss, but with per-step timeouts)
         for label, timeout in tail_steps:
-            time.sleep(0.5)
+            time.sleep(0.3)
             wait_until_detect_then_delay_click_with_timeout(
-                images[label], label, delay_before_click_sec=0.5, timeout_sec=timeout, click_kwargs=strong_single
+                images[label], label, delay_before_click_sec=0.3, timeout_sec=timeout, click_kwargs=strong_single
             )
 
         print(f"=== cycle {cycle_idx} completed ===")
