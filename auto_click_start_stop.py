@@ -175,7 +175,7 @@ def wait_until_detect_and_click(image_path: str, label: str) -> None:
     while True:
         point = locate_center(image_path)
         if point is not None:
-             time.sleep(1)
+            time.sleep(1)
             click_point(point)
             print(f"[{label}] clicked at: {point}")
             return
@@ -226,7 +226,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         run_adb(["shell", "su", "0", "date", adb_date])
 
         # 3
-        time.sleep(0.1)
+        time.sleep(0.3)
         launch_package(GAME_PACKAGE)
 
         # 4
