@@ -308,10 +308,10 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         # 19
         time.sleep(0.1)
         launch_package(GAME_PACKAGE)
-
+        time.sleep(1)
         # 20-28 (mostly skip on miss, but with per-step timeouts)
         for label, timeout in tail_steps:
-            time.sleep(0.3)
+            time.sleep(0.5)
             wait_until_detect_then_delay_click_with_timeout(
                 images[label], label, delay_before_click_sec=0.3, timeout_sec=timeout, click_kwargs=strong_single
             )
