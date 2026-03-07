@@ -175,6 +175,7 @@ def wait_until_detect_and_click(image_path: str, label: str) -> None:
     while True:
         point = locate_center(image_path)
         if point is not None:
+             time.sleep(1)
             click_point(point)
             print(f"[{label}] clicked at: {point}")
             return
