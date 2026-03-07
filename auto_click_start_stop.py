@@ -246,9 +246,16 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
         # 8 (stronger double-click, reuse first detect)
         wait_until_detect_then_delay_click_with_timeout(
-            images["STARTM"], "STARTM", delay_before_click_sec=0.3, timeout_sec=7.0, click_kwargs=heavy_startm, reuse_detect_point=True
+            images["STARTM"], "STARTM", delay_before_click_sec=0.1, timeout_sec=4.0, click_kwargs=heavy_startm, reuse_detect_point=True
         )
 
+        wait_until_detect_then_delay_click_with_timeout(
+            images["STARTM"], "STARTM", delay_before_click_sec=0.1, timeout_sec=0.5, click_kwargs=heavy_startm, reuse_detect_point=True
+        )
+
+        wait_until_detect_then_delay_click_with_timeout(
+            images["STARTM"], "STARTM", delay_before_click_sec=0.1, timeout_sec=0.5, click_kwargs=heavy_startm, reuse_detect_point=True
+        )
         # 9
         time.sleep(0.3)
         wait_until_detect_then_delay_click_with_timeout(
@@ -264,13 +271,13 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             return False
 
         # 11
-        time.sleep(0.5)
+        time.sleep(0.3)
         wait_until_detect_then_delay_click_with_timeout(
-            images["CROSS"], "CROSS", delay_before_click_sec=0.3, timeout_sec=3
+            images["CROSS"], "CROSS", delay_before_click_sec=0.3, timeout_sec=1
         )
         time.sleep(0.5)
         wait_until_detect_then_delay_click_with_timeout(
-            images["CROSS"], "CROSS", delay_before_click_sec=0.3, timeout_sec=3
+            images["CROSS"], "CROSS", delay_before_click_sec=0.3, timeout_sec=1
         )
 
         # 12
