@@ -175,7 +175,7 @@ def wait_until_detect_and_click(image_path: str, label: str) -> None:
     while True:
         point = locate_center(image_path)
         if point is not None:
-            time.sleep(1)
+            time.sleep(0.3)
             click_point(point)
             print(f"[{label}] clicked at: {point}")
             return
@@ -221,7 +221,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         run_adb(["shell", "su", "0", "settings", "put", "global", "auto_time", "0"])
 
         # 2
-        time.sleep(0.1)
+        time.sleep(0.3)
         adb_date = (datetime.now() - timedelta(days=2)).strftime("%m%d%H%M%Y.%S")
         run_adb(["shell", "su", "0", "date", adb_date])
 
@@ -240,18 +240,22 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         launch_package(GAME_PACKAGE)
 
         # 7
-        time.sleep(1)
+        time.sleep(0.3)
         wait_until_detect_and_click(images["SKIP"], "SKIP-CLICK-2")
+        
+        wait_until_detect_then_delay_click_with_timeout(
+            images["SKIP"], "SKIP-CLICK-2", delay_before_click_sec=0.3, timeout_sec=1
+        )        
 
         # 8 (if miss, just skip)
         wait_until_detect_then_delay_click_with_timeout(
-            images["STARTM"], "STARTM", delay_before_click_sec=0.5, timeout_sec=5.0
+            images["STARTM"], "STARTM", delay_before_click_sec=0.5, timeout_sec=3.0
         )
 
         # 9
-        time.sleep(0.1)
+        time.sleep(0.3)
         wait_until_detect_then_delay_click_with_timeout(
-            images["WORLDM"], "WORLDM", delay_before_click_sec=0.0, timeout_sec=2.0
+            images["WORLDM"], "WORLDM", delay_before_click_sec=0.0, timeout_sec=1.0
         )
 
         # 10 (stop program if miss)
