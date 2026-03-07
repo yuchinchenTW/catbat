@@ -249,14 +249,13 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         wait_until_detect_then_delay_click_with_timeout(
             images["STARTM"], "STARTM", delay_before_click_sec=0.1, timeout_sec=4.0, click_kwargs=heavy_startm, reuse_detect_point=True
         )
-
+        wait_until_detect_then_delay_click_with_timeout(
+            images["STARTM"], "STARTM", delay_before_click_sec=0.1, timeout_sec=0.5, click_kwargs=heavy_startm, reuse_detect_point=True
+        )
         wait_until_detect_then_delay_click_with_timeout(
             images["STARTM"], "STARTM", delay_before_click_sec=0.1, timeout_sec=0.5, click_kwargs=heavy_startm, reuse_detect_point=True
         )
 
-        wait_until_detect_then_delay_click_with_timeout(
-            images["STARTM"], "STARTM", delay_before_click_sec=0.1, timeout_sec=0.5, click_kwargs=heavy_startm, reuse_detect_point=True
-        )
         # 9
         time.sleep(0.3)
         wait_until_detect_then_delay_click_with_timeout(
@@ -326,38 +325,40 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
         if not gold_found:
             print("GOLD not detected, skip to MAP/TRAVEL/YES sequence")
-            def map_travel_yes(extra_yes: bool = False):
+
+            def try_map_with_result3_retries(map_timeout: float) -> None:
                 time.sleep(0.5)
                 map_ok = wait_until_detect_then_delay_click_with_timeout(
-                    images["MAP"], "MAP", delay_before_click_sec=0.3, timeout_sec=1.0, click_kwargs=strong_single
+                    images["MAP"], "MAP", delay_before_click_sec=0.3, timeout_sec=map_timeout, click_kwargs=strong_single
                 )
                 if not map_ok:
-                    for _ in range(2):
+                    for _ in range(3):
                         time.sleep(0.3)
                         wait_until_detect_then_delay_click_with_timeout(
                             images["RESULT3"], "RESULT3-RETRY", delay_before_click_sec=0.2, timeout_sec=0.5, click_kwargs=strong_single, reuse_detect_point=True
                         )
                     time.sleep(0.3)
                     wait_until_detect_then_delay_click_with_timeout(
-                        images["MAP"], "MAP-RETRY", delay_before_click_sec=0.3, timeout_sec=1.0, click_kwargs=strong_single
-                    )
-                time.sleep(0.5)
-                wait_until_detect_then_delay_click_with_timeout(
-                    images["TRAVEL"], "TRAVEL", delay_before_click_sec=0.3, timeout_sec=3, click_kwargs=strong_single
-                )
-                time.sleep(0.5)
-                wait_until_detect_then_delay_click_with_timeout(
-                    images["YES"], "YES", delay_before_click_sec=0.3, timeout_sec=1.2, click_kwargs=strong_single
-                )
-                if extra_yes:
-                    time.sleep(0.3)
-                    wait_until_detect_then_delay_click_with_timeout(
-                        images["YES"], "YES-SECOND", delay_before_click_sec=0.3, timeout_sec=1.2, click_kwargs=strong_single
+                        images["MAP"], "MAP-RETRY", delay_before_click_sec=0.3, timeout_sec=map_timeout, click_kwargs=strong_single
                     )
 
-            map_travel_yes(extra_yes=True)
+            try_map_with_result3_retries(map_timeout=1.5)
+
+            time.sleep(0.5)
+            wait_until_detect_then_delay_click_with_timeout(
+                images["TRAVEL"], "TRAVEL", delay_before_click_sec=0.3, timeout_sec=3, click_kwargs=strong_single
+            )
+            time.sleep(0.5)
+            wait_until_detect_then_delay_click_with_timeout(
+                images["YES"], "YES", delay_before_click_sec=0.3, timeout_sec=1.2, click_kwargs=strong_single
+            )
+            time.sleep(0.3)
+            wait_until_detect_then_delay_click_with_timeout(
+                images["YES"], "YES-SECOND", delay_before_click_sec=0.3, timeout_sec=1.2, click_kwargs=strong_single
+            )
 
         else:
+            # gold found path
             tail = [
                 ("RESULT0", 1, strong_single),
                 ("RESULT0-1", 1, strong_single),
@@ -378,9 +379,24 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
             for label, timeout, kwargs in tail:
                 time.sleep(0.5)
-                wait_until_detect_then_delay_click_with_timeout(
-                    images[label], label, delay_before_click_sec=0.3, timeout_sec=timeout, click_kwargs=kwargs
-                )
+                if label == "MAP":
+                    map_ok = wait_until_detect_then_delay_click_with_timeout(
+                        images[label], label, delay_before_click_sec=0.3, timeout_sec=timeout, click_kwargs=kwargs
+                    )
+                    if not map_ok:
+                        for _ in range(3):
+                            time.sleep(0.3)
+                            wait_until_detect_then_delay_click_with_timeout(
+                                images["RESULT3"], "RESULT3-RETRY", delay_before_click_sec=0.2, timeout_sec=0.5, click_kwargs=strong_single, reuse_detect_point=True
+                            )
+                        time.sleep(0.3)
+                        wait_until_detect_then_delay_click_with_timeout(
+                            images[label], f"{label}-RETRY", delay_before_click_sec=0.3, timeout_sec=timeout, click_kwargs=kwargs
+                        )
+                else:
+                    wait_until_detect_then_delay_click_with_timeout(
+                        images[label], label, delay_before_click_sec=0.3, timeout_sec=timeout, click_kwargs=kwargs
+                    )
 
         print(f"=== cycle {cycle_idx} completed ===")
         return True
