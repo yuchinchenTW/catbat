@@ -34,12 +34,9 @@ def build_image_map() -> dict[str, str]:
         "RESULT1": BASE_DIR / "result1.png",
         "RESULT2": BASE_DIR / "result2.png",
         "RESULT3": BASE_DIR / "result3.png",
-        "RESULT3": BASE_DIR / "result3.png",
-        "RESULT3": BASE_DIR / "result3.png",
         "RESULT4": BASE_DIR / "result4.png",
         "MAP": BASE_DIR / "map.png",
         "TRAVEL": BASE_DIR / "travel.png",
-        "YES": BASE_DIR / "yes.png",
         "YES": BASE_DIR / "yes.png",
     }
 
@@ -195,24 +192,21 @@ def wait_until_detect(image_path: str, label: str) -> None:
 def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
     print(f"=== cycle {cycle_idx} start ===")
     strong_single = {"clicks": 1, "hold": 0.05}
+    gold_click = {"clicks": 3, "hold": 0.08, "interval": 0.08}
     triple_dodo = {"clicks": 3, "interval": 0.5, "hold": 0.02}
 
-    # per-step timeouts for tail sequence
     tail_steps = [
-        ("GOLD", 7.0),
-        ("RESULT0", 1),
-        ("RESULT0-1", 1),
-        ("RESULT", 7.0),
-        ("RESULT1", 0.3),
-        ("RESULT2", 0.3),
-        ("RESULT3", 0.3),
-        ("RESULT3", 0.3),
-        ("RESULT3", 0.3),
-        ("RESULT4", 0.3),
-        ("MAP", 3),
-        ("TRAVEL", 3),
-        ("YES", 1.2),
-        ("YES", 1.2),
+        ("GOLD", 7.0, gold_click),
+        ("RESULT0", 1, strong_single),
+        ("RESULT0-1", 1, strong_single),
+        ("RESULT", 7.0, strong_single),
+        ("RESULT1", 0.3, strong_single),
+        ("RESULT2", 0.3, strong_single),
+        ("RESULT3", 0.3, strong_single),
+        ("RESULT4", 0.3, strong_single),
+        ("MAP", 3, strong_single),
+        ("TRAVEL", 3, strong_single),
+        ("YES", 1.2, strong_single),
     ]
 
     try:
@@ -242,12 +236,11 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         # 7
         time.sleep(0.3)
         wait_until_detect_and_click(images["SKIP"], "SKIP-CLICK-2")
-        
         wait_until_detect_then_delay_click_with_timeout(
             images["SKIP"], "SKIP-CLICK-2", delay_before_click_sec=0.3, timeout_sec=1
-        )        
+        )
 
-        # 8 (if miss, just skip)
+        # 8
         wait_until_detect_then_delay_click_with_timeout(
             images["STARTM"], "STARTM", delay_before_click_sec=0.5, timeout_sec=3.0
         )
@@ -258,7 +251,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             images["WORLDM"], "WORLDM", delay_before_click_sec=0.0, timeout_sec=1.0
         )
 
-        # 10 (stop program if miss)
+        # 10
         time.sleep(0.1)
         if not wait_until_detect_then_delay_click_with_timeout(
             images["WORLDM2"], "WORLDM2", delay_before_click_sec=0.0, timeout_sec=2.0
@@ -266,18 +259,17 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             print("stop: WORLDM2 not detected in 2 seconds.")
             return False
 
-        # 11 (skip on miss)
+        # 11
+        time.sleep(0.5)
+        wait_until_detect_then_delay_click_with_timeout(
+            images["CROSS"], "CROSS", delay_before_click_sec=0.3, timeout_sec=3
+        )
         time.sleep(0.5)
         wait_until_detect_then_delay_click_with_timeout(
             images["CROSS"], "CROSS", delay_before_click_sec=0.3, timeout_sec=3
         )
 
-        time.sleep(0.5)
-        wait_until_detect_then_delay_click_with_timeout(
-            images["CROSS"], "CROSS", delay_before_click_sec=0.3, timeout_sec=3
-        )
-
-        # 12 (stop program if miss)
+        # 12
         time.sleep(0.1)
         if not wait_until_detect_then_delay_click_with_timeout(
             images["DODO"], "DODO-TRIPLE", delay_before_click_sec=0.6, timeout_sec=2.0, click_kwargs=triple_dodo
@@ -285,7 +277,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             print("stop: DODO (first) not detected in time.")
             return False
 
-        # 13 (skip on miss; timeout 1s per spec)
+        # 13
         time.sleep(0.1)
         wait_until_detect_then_delay_click_with_timeout(
             images["DODO"], "DODO-ONCE", delay_before_click_sec=0.5, timeout_sec=1.0
@@ -314,11 +306,37 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         time.sleep(0.1)
         launch_package(GAME_PACKAGE)
         time.sleep(1)
-        # 20-28 (mostly skip on miss, but with per-step timeouts)
-        for label, timeout in tail_steps:
+
+        # 20-28
+        gold_found = wait_until_detect_then_delay_click_with_timeout(
+            images["GOLD"], "GOLD", delay_before_click_sec=0.3, timeout_sec=7.0, click_kwargs=gold_click
+        )
+
+        if not gold_found:
+            print("GOLD not detected, skip to MAP/TRAVEL/YES sequence")
+            tail = [
+                ("MAP", 3, strong_single),
+                ("TRAVEL", 3, strong_single),
+                ("YES", 1.2, strong_single),
+            ]
+        else:
+            tail = [
+                ("RESULT0", 1, strong_single),
+                ("RESULT0-1", 1, strong_single),
+                ("RESULT", 7.0, strong_single),
+                ("RESULT1", 0.3, strong_single),
+                ("RESULT2", 0.3, strong_single),
+                ("RESULT3", 0.3, strong_single),
+                ("RESULT4", 0.3, strong_single),
+                ("MAP", 3, strong_single),
+                ("TRAVEL", 3, strong_single),
+                ("YES", 1.2, strong_single),
+            ]
+
+        for label, timeout, kwargs in tail:
             time.sleep(0.5)
             wait_until_detect_then_delay_click_with_timeout(
-                images[label], label, delay_before_click_sec=0.3, timeout_sec=timeout, click_kwargs=strong_single
+                images[label], label, delay_before_click_sec=0.3, timeout_sec=timeout, click_kwargs=kwargs
             )
 
         print(f"=== cycle {cycle_idx} completed ===")
