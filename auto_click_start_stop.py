@@ -283,7 +283,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         # 12
         time.sleep(0.1)
         if not wait_until_detect_then_delay_click_with_timeout(
-            images["DODO"], "DODO-TRIPLE", delay_before_click_sec=0.6, timeout_sec=2.0, click_kwargs=triple_dodo
+            images["DODO"], "DODO-TRIPLE", delay_before_click_sec=0.3, timeout_sec=1.0, click_kwargs=triple_dodo
         ):
             print("DODO first miss -> restart next cycle")
             return True  # do not stop; move to next loop
@@ -293,7 +293,15 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         wait_until_detect_then_delay_click_with_timeout(
             images["DODO"], "DODO-ONCE", delay_before_click_sec=0.5, timeout_sec=1.0
         )
-
+        time.sleep(0.1)
+        wait_until_detect_then_delay_click_with_timeout(
+            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.5, timeout_sec=1.0
+        )
+        time.sleep(0.1)
+        wait_until_detect_then_delay_click_with_timeout(
+            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.5, timeout_sec=1.0
+        )        
+        
         # 14
         time.sleep(0.1)
         launch_package(FIREWALL_PACKAGE)
