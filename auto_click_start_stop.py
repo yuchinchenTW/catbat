@@ -204,10 +204,10 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         ("RESULT0", 1, strong_single),
         ("RESULT0-1", 1, strong_single),
         ("RESULT", 7.0, strong_single),
-        ("RESULT1", 0.3, strong_single),
-        ("RESULT2", 0.3, strong_single),
-        ("RESULT3", 0.3, strong_single),
-        ("RESULT4", 0.3, strong_single),
+        ("RESULT1", 0.2, strong_single),
+        ("RESULT2", 0.2, strong_single),
+        ("RESULT3", 0.2, strong_single),
+        ("RESULT4", 0.2, strong_single),
         ("MAP", 3, strong_single),
         ("TRAVEL", 3, strong_single),
         ("YES", 1.2, strong_single),
@@ -220,12 +220,12 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         run_adb(["shell", "su", "0", "settings", "put", "global", "auto_time", "0"])
 
         # 2
-        time.sleep(0.3)
+        time.sleep(0.1)
         adb_date = (datetime.now() - timedelta(days=2)).strftime("%m%d%H%M%Y.%S")
         run_adb(["shell", "su", "0", "date", adb_date])
 
         # 3
-        time.sleep(0.3)
+        time.sleep(0.1)
         launch_package(GAME_PACKAGE)
 
         # 4
@@ -239,7 +239,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         launch_package(GAME_PACKAGE)
 
         # 7
-        time.sleep(0.3)
+        time.sleep(0.2)
         wait_until_detect_and_click(images["SKIP"], "SKIP-CLICK-2")
         wait_until_detect_then_delay_click_with_timeout(
             images["SKIP"], "SKIP-CLICK-2", delay_before_click_sec=0.3, timeout_sec=1
@@ -247,7 +247,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
         # 8
         wait_until_detect_then_delay_click_with_timeout(
-            images["STARTM"], "STARTM", delay_before_click_sec=0.1, timeout_sec=4.0, click_kwargs=heavy_startm, reuse_detect_point=True
+            images["STARTM"], "STARTM", delay_before_click_sec=0.5, timeout_sec=4.0, click_kwargs=heavy_startm, reuse_detect_point=True
         )
         wait_until_detect_then_delay_click_with_timeout(
             images["STARTM"], "STARTM", delay_before_click_sec=0.1, timeout_sec=0.5, click_kwargs=heavy_startm, reuse_detect_point=True
@@ -257,25 +257,25 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         )
 
         # 9
-        time.sleep(0.3)
+        time.sleep(0.5)
         wait_until_detect_then_delay_click_with_timeout(
-            images["WORLDM"], "WORLDM", delay_before_click_sec=0.0, timeout_sec=1.0
+            images["WORLDM"], "WORLDM", delay_before_click_sec=0.2, timeout_sec=3.0
         )
 
         # 10
-        time.sleep(0.1)
+        time.sleep(0.5)
         if not wait_until_detect_then_delay_click_with_timeout(
-            images["WORLDM2"], "WORLDM2", delay_before_click_sec=0.0, timeout_sec=2.0
+            images["WORLDM2"], "WORLDM2", delay_before_click_sec=0.2, timeout_sec=4.0
         ):
             print("WORLDM2 miss -> restart next cycle")
             return True  # do not stop; move to next loop
 
         # 11
-        time.sleep(0.3)
+        time.sleep(0.1)
         wait_until_detect_then_delay_click_with_timeout(
             images["CROSS"], "CROSS", delay_before_click_sec=0.3, timeout_sec=1
         )
-        time.sleep(0.5)
+        time.sleep(0.1)
         wait_until_detect_then_delay_click_with_timeout(
             images["CROSS"], "CROSS", delay_before_click_sec=0.3, timeout_sec=1
         )
@@ -307,7 +307,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         launch_package(GAME_PACKAGE)
 
         # 17
-        time.sleep(1)
+        time.sleep(0.6)
         launch_package(FIREWALL_PACKAGE)
 
         # 18
@@ -327,28 +327,28 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             print("GOLD not detected, skip to MAP/TRAVEL/YES sequence")
 
             def try_map_with_result3_retries(map_timeout: float) -> None:
-                time.sleep(0.5)
+                time.sleep(0.2)
                 map_ok = wait_until_detect_then_delay_click_with_timeout(
                     images["MAP"], "MAP", delay_before_click_sec=0.3, timeout_sec=map_timeout, click_kwargs=strong_single
                 )
                 if not map_ok:
                     for _ in range(3):
-                        time.sleep(0.3)
+                        time.sleep(0.2)
                         wait_until_detect_then_delay_click_with_timeout(
                             images["RESULT3"], "RESULT3-RETRY", delay_before_click_sec=0.2, timeout_sec=0.5, click_kwargs=strong_single, reuse_detect_point=True
                         )
-                    time.sleep(0.3)
+                    time.sleep(0.2)
                     wait_until_detect_then_delay_click_with_timeout(
                         images["MAP"], "MAP-RETRY", delay_before_click_sec=0.3, timeout_sec=map_timeout, click_kwargs=strong_single
                     )
 
             try_map_with_result3_retries(map_timeout=1.5)
 
-            time.sleep(0.5)
+            time.sleep(0.1)
             wait_until_detect_then_delay_click_with_timeout(
                 images["TRAVEL"], "TRAVEL", delay_before_click_sec=0.3, timeout_sec=3, click_kwargs=strong_single
             )
-            time.sleep(0.5)
+            time.sleep(0.3)
             wait_until_detect_then_delay_click_with_timeout(
                 images["YES"], "YES", delay_before_click_sec=0.3, timeout_sec=1.2, click_kwargs=strong_single
             )
@@ -371,14 +371,14 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                 ("RESULT3", 0.1, strong_single),
                 ("RESULT3", 0.1, strong_single),
                 ("RESULT4", 0.3, strong_single),
-                ("MAP", 1.5, strong_single),
+                ("MAP", 2, strong_single),
                 ("TRAVEL", 3, strong_single),
                 ("YES", 1.2, strong_single),
                 ("YES", 1.2, strong_single),
             ]
 
             for label, timeout, kwargs in tail:
-                time.sleep(0.5)
+                time.sleep(0.3)
                 if label == "MAP":
                     map_ok = wait_until_detect_then_delay_click_with_timeout(
                         images[label], label, delay_before_click_sec=0.3, timeout_sec=timeout, click_kwargs=kwargs
@@ -387,7 +387,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                         for _ in range(3):
                             time.sleep(0.3)
                             wait_until_detect_then_delay_click_with_timeout(
-                                images["RESULT3"], "RESULT3-RETRY", delay_before_click_sec=0.2, timeout_sec=0.5, click_kwargs=strong_single, reuse_detect_point=True
+                                images["RESULT3"], "RESULT3-RETRY", delay_before_click_sec=0.2, timeout_sec=0.3, click_kwargs=strong_single, reuse_detect_point=True
                             )
                         time.sleep(0.3)
                         wait_until_detect_then_delay_click_with_timeout(
