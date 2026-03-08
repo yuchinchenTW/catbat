@@ -244,28 +244,28 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         wait_until_detect_then_delay_click_with_timeout(
             images["SKIP"], "SKIP-CLICK-2", delay_before_click_sec=0.3, timeout_sec=1
         )
-
+        time.sleep(1)
         # 8
         wait_until_detect_then_delay_click_with_timeout(
-            images["STARTM"], "STARTM", delay_before_click_sec=0.5, timeout_sec=4.0, click_kwargs=heavy_startm, reuse_detect_point=True
+            images["STARTM"], "STARTM", delay_before_click_sec=0.5, timeout_sec=1.0, click_kwargs=heavy_startm, reuse_detect_point=True
         )
         wait_until_detect_then_delay_click_with_timeout(
-            images["STARTM"], "STARTM", delay_before_click_sec=0.1, timeout_sec=0.5, click_kwargs=heavy_startm, reuse_detect_point=True
+            images["STARTM"], "STARTM", delay_before_click_sec=0.2, timeout_sec=0.3, click_kwargs=heavy_startm, reuse_detect_point=True
         )
         wait_until_detect_then_delay_click_with_timeout(
-            images["STARTM"], "STARTM", delay_before_click_sec=0.1, timeout_sec=0.5, click_kwargs=heavy_startm, reuse_detect_point=True
+            images["STARTM"], "STARTM", delay_before_click_sec=0.2, timeout_sec=0.3, click_kwargs=heavy_startm, reuse_detect_point=True
         )
 
         # 9
-        time.sleep(0.5)
+        time.sleep(0.3)
         wait_until_detect_then_delay_click_with_timeout(
-            images["WORLDM"], "WORLDM", delay_before_click_sec=0.2, timeout_sec=3.0
+            images["WORLDM"], "WORLDM", delay_before_click_sec=0.2, timeout_sec=2.0
         )
 
         # 10
-        time.sleep(0.5)
+        time.sleep(0.3)
         if not wait_until_detect_then_delay_click_with_timeout(
-            images["WORLDM2"], "WORLDM2", delay_before_click_sec=0.2, timeout_sec=4.0
+            images["WORLDM2"], "WORLDM2", delay_before_click_sec=0.2, timeout_sec=2.0
         ):
             print("WORLDM2 miss -> restart next cycle")
             return True  # do not stop; move to next loop
