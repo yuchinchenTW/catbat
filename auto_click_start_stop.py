@@ -347,7 +347,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                         )
                     time.sleep(0.2)
                     wait_until_detect_then_delay_click_with_timeout(
-                        images["MAP"], "MAP-RETRY", delay_before_click_sec=0.3,3 timeout_sec=map_timeout, click_kwargs=strong_single
+                        images["MAP"], "MAP-RETRY", delay_before_click_sec=0.35, timeout_sec=map_timeout, click_kwargs=strong_single
                     )
 
             try_map_with_result3_retries(map_timeout=2)
