@@ -276,13 +276,13 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             return True  # do not stop; move to next loop
 
         # 11
-        time.sleep(0.1)
+        time.sleep(0.2)
         wait_until_detect_then_delay_click_with_timeout(
-            images["CROSS"], "CROSS", delay_before_click_sec=0.4, timeout_sec=1
+            images["CROSS"], "CROSS", delay_before_click_sec=0.6, timeout_sec=1
         )
         time.sleep(0.1)
         wait_until_detect_then_delay_click_with_timeout(
-            images["CROSS"], "CROSS", delay_before_click_sec=0.4, timeout_sec=1
+            images["CROSS"], "CROSS", delay_before_click_sec=0.2, timeout_sec=1
         )
 
         # 12
@@ -296,19 +296,19 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         # 13
         time.sleep(0.1)
         wait_until_detect_then_delay_click_with_timeout(
-            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.5, timeout_sec=1.0
+            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.3, timeout_sec=1.0
         )
         time.sleep(0.1)
         wait_until_detect_then_delay_click_with_timeout(
-            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.5, timeout_sec=1.0
+            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.2, timeout_sec=1.0
         )
         time.sleep(0.1)
         wait_until_detect_then_delay_click_with_timeout(
-            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.5, timeout_sec=1.0
+            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.1, timeout_sec=1.0
         )        
         
         # 14
-        time.sleep(0.1)
+        #time.sleep(0.1)
         #launch_package(FIREWALL_PACKAGE)
 
         # 15
