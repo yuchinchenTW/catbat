@@ -403,18 +403,18 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                     if label == "RESULT":
                        time.sleep(0.1)
                        wait_until_detect_then_delay_click_with_timeout(
-                           images[label], label, delay_before_click_sec=0.2, timeout_sec=timeout, click_kwargs=kwargs
+                           images[label], label, delay_before_click_sec=0.2, timeout_sec=1, click_kwargs=kwargs
                        )
                        wait_until_detect_then_delay_click_with_timeout(
-                           images[label], label, delay_before_click_sec=0.2, timeout_sec=timeout, click_kwargs=kwargs
+                           images[label], label, delay_before_click_sec=0.2, timeout_sec=0.2, click_kwargs=kwargs
                        )
 
                        wait_until_detect_then_delay_click_with_timeout(
-                           images[label], label, delay_before_click_sec=0.2, timeout_sec=timeout, click_kwargs=kwargs
+                           images[label], label, delay_before_click_sec=0.2, timeout_sec=0.2, click_kwargs=kwargs
                        )                    
 
                        wait_until_detect_then_delay_click_with_timeout(
-                           images[label], label, delay_before_click_sec=0.2, timeout_sec=timeout, click_kwargs=kwargs
+                           images[label], label, delay_before_click_sec=0.2, timeout_sec=0.2, click_kwargs=kwargs
                        )                    
                     else:
                        wait_until_detect_then_delay_click_with_timeout(
