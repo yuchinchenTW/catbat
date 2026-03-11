@@ -265,7 +265,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         # 9
         time.sleep(0.3)
         wait_until_detect_then_delay_click_with_timeout(
-            images["WORLDM"], "WORLDM", delay_before_click_sec=0.2, timeout_sec=2.0
+            images["WORLDM"], "WORLDM", delay_before_click_sec=0.2, timeout_sec=0.5
         )
 
         # 10
