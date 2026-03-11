@@ -376,6 +376,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                 ("RESULT3", 0.2, strong_single),
                 ("RESULT3", 0.2, strong_single),
                 ("RESULT3", 0.2, strong_single),
+                ("CROSS", 0.2, strong_single),
                 ("RESULT4", 0.3, strong_single),
                 ("MAP", 2, strong_single),
                 ("TRAVEL", 3, strong_single),
