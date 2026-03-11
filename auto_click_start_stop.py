@@ -413,7 +413,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                            images[label], label, delay_before_click_sec=0.2, timeout_sec=timeout, click_kwargs=kwargs
                        )                    
 
-\                      wait_until_detect_then_delay_click_with_timeout(
+                       wait_until_detect_then_delay_click_with_timeout(
                            images[label], label, delay_before_click_sec=0.2, timeout_sec=timeout, click_kwargs=kwargs
                        )                    
                     else:
