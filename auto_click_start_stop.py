@@ -201,8 +201,8 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
     tail_steps = [
         ("GOLD", 7.0, gold_click),
-        ("RESULT0", 1, strong_single),
-        ("RESULT0-1", 1, strong_single),
+        ("RESULT0", 1.5, strong_single),
+        ("RESULT0-1", 1.5, strong_single),
         ("RESULT", 7.0, strong_single),
         ("RESULT1", 0.2, strong_single),
         ("RESULT2", 0.2, strong_single),
@@ -304,15 +304,15 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         
         # 14
         time.sleep(0.1)
-        launch_package(FIREWALL_PACKAGE)
+        #launch_package(FIREWALL_PACKAGE)
 
         # 15
         time.sleep(0.1)
         run_adb(["shell", "su", "0", "settings", "put", "global", "auto_time", "1"])
 
         # 16
-        time.sleep(0.3)
-        launch_package(GAME_PACKAGE)
+        #time.sleep(0.3)
+        #launch_package(GAME_PACKAGE)
 
         # 17
         time.sleep(0.6)
@@ -369,7 +369,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             # gold found path with MAP fallback
             tail = [
                 ("RESULT0", 1, strong_single),
-                ("RESULT0-1", 1, strong_single),
+                ("RESULT0-1", 1.5, strong_single),
                 ("RESULT", 7.0, strong_single),
                 ("RESULT1", 0.3, strong_single),
                 ("RESULT2", 0.3, strong_single),
@@ -386,7 +386,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             ]
 
             for label, timeout, kwargs in tail:
-                time.sleep(0.1)
+                time.sleep(0.3)
                 if label == "MAP":
                     map_ok = wait_until_detect_then_delay_click_with_timeout(
                         images[label], label, delay_before_click_sec=0.3, timeout_sec=timeout, click_kwargs=kwargs
@@ -395,7 +395,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                         for _ in range(3):
                             time.sleep(0.1)
                             wait_until_detect_then_delay_click_with_timeout(
-                                images["RESULT3"], "RESULT3-RETRY", delay_before_click_sec=0.2, timeout_sec=0.3, click_kwargs=strong_single, reuse_detect_point=True
+                                images["RESULT3"], "RESULT3-RETRY", delay_before_click_sec=0.2, timeout_sec=0.4, click_kwargs=strong_single, reuse_detect_point=True
                             )
                         time.sleep(0.1)
                         wait_until_detect_then_delay_click_with_timeout(
