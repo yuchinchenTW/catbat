@@ -370,7 +370,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             tail = [
                 ("RESULT0", 1, strong_single),
                 ("RESULT0-1", 1.5, strong_single),
-                ("RESULT", 7.0, strong_single),
+                ("RESULT", 4.0, strong_single),
                 ("RESULT1", 0.3, strong_single),
                 ("RESULT2", 0.3, strong_single),
                 ("RESULT3", 0.2, strong_single),
@@ -386,7 +386,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             ]
 
             for label, timeout, kwargs in tail:
-                time.sleep(0.3)
+                time.sleep(0.2)
                 if label == "MAP":
                     map_ok = wait_until_detect_then_delay_click_with_timeout(
                         images[label], label, delay_before_click_sec=0.3, timeout_sec=timeout, click_kwargs=kwargs
@@ -402,9 +402,20 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                             images[label], f"{label}-RETRY", delay_before_click_sec=0.3, timeout_sec=timeout, click_kwargs=kwargs
                         )
                 else:
-                    wait_until_detect_then_delay_click_with_timeout(
-                        images[label], label, delay_before_click_sec=0.5, timeout_sec=timeout, click_kwargs=kwargs
-                    )
+                    if label == "RESULT":
+                       time.sleep(0.3)
+                       wait_until_detect_then_delay_click_with_timeout(
+                           images[label], label, delay_before_click_sec=0.5, timeout_sec=timeout, click_kwargs=kwargs
+                       )
+                       wait_until_detect_then_delay_click_with_timeout(
+                           images[label], label, delay_before_click_sec=0.5, timeout_sec=timeout, click_kwargs=kwargs
+                       )
+                    
+                    
+                    else:
+                       wait_until_detect_then_delay_click_with_timeout(
+                           images[label], label, delay_before_click_sec=0.5, timeout_sec=timeout, click_kwargs=kwargs
+                       )
 
         print(f"=== cycle {cycle_idx} completed ===")
         return True
