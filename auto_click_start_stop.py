@@ -229,14 +229,19 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         launch_package(GAME_PACKAGE)
 
         # 4
-        wait_until_detect(images["SKIP"], "SKIP-DETECT-1")
-        launch_package(FIREWALL_PACKAGE)
+        #wait_until_detect(images["SKIP"], "SKIP-DETECT-1")
+        #launch_package(FIREWALL_PACKAGE)
 
         # 5
-        wait_until_detect_and_click(images["START_GREEN"], "START-GREEN")
+        #wait_until_detect_and_click(images["START_GREEN"], "START-GREEN")
+
+        #adb shell su 0 am force-stop app.greyshirts.firewall 
+        #adb shell su 0 service call connectivity 48 i32 0 s16 app.greyshirts.firewall i32 0
+        
+        run_adb(["shell", "su", "0", "service", "call", "connectivity", "48", "i32", "0", "s16", "app.greyshirts.firewall", "i32", "0"])
 
         # 6
-        launch_package(GAME_PACKAGE)
+       # launch_package(GAME_PACKAGE)
 
         # 7
         time.sleep(1)
@@ -273,11 +278,11 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         # 11
         time.sleep(0.1)
         wait_until_detect_then_delay_click_with_timeout(
-            images["CROSS"], "CROSS", delay_before_click_sec=0.3, timeout_sec=1
+            images["CROSS"], "CROSS", delay_before_click_sec=0.4, timeout_sec=1
         )
         time.sleep(0.1)
         wait_until_detect_then_delay_click_with_timeout(
-            images["CROSS"], "CROSS", delay_before_click_sec=0.3, timeout_sec=1
+            images["CROSS"], "CROSS", delay_before_click_sec=0.4, timeout_sec=1
         )
 
         # 12
@@ -316,15 +321,18 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
         # 17
         time.sleep(0.6)
-        launch_package(FIREWALL_PACKAGE)
+       # launch_package(FIREWALL_PACKAGE)
+        #        #adb shell su 0 service call connectivity 48 i32 0 s16 app.greyshirts.firewall i32 0
+        #adb shell su 0 am force-stop app.greyshirts.firewall 
 
         # 18
-        wait_until_detect_and_click(images["START_RED"], "START-RED")
+       # wait_until_detect_and_click(images["START_RED"], "START-RED")
+        run_adb(["shell", "su", "0", "am", "force-stop", "app.greyshirts.firewall"])
 
         # 19
         time.sleep(0.1)
-        launch_package(GAME_PACKAGE)
-        time.sleep(1)
+       # launch_package(GAME_PACKAGE)
+        #time.sleep(1)
 
         # 20-28
         gold_found = wait_until_detect_then_delay_click_with_timeout(
