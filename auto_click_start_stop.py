@@ -343,6 +343,11 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         if not gold_found:
             print("GOLD not detected, skip to MAP/TRAVEL/YES sequence")
 
+            time.sleep(0.1)
+            wait_until_detect_then_delay_click_with_timeout(
+                images["CROSS2"], "CROSS2", delay_before_click_sec=0.2, timeout_sec=0.2, click_kwargs=strong_single
+            )
+
             def try_map_with_result3_retries(map_timeout: float) -> None:
                 time.sleep(0.2)
                 map_ok = wait_until_detect_then_delay_click_with_timeout(
@@ -365,10 +370,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             wait_until_detect_then_delay_click_with_timeout(
                 images["RESULT3"], "RESULT3", delay_before_click_sec=0.2, timeout_sec=0.3, click_kwargs=strong_single
             )
-            time.sleep(0.1)
-            wait_until_detect_then_delay_click_with_timeout(
-                images["CROSS2"], "CROSS2", delay_before_click_sec=0.2, timeout_sec=0.2, click_kwargs=strong_single
-            )
+
 
             time.sleep(0.1)
             wait_until_detect_then_delay_click_with_timeout(
