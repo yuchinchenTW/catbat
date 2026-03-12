@@ -265,7 +265,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         # 9
         time.sleep(0.3)
         wait_until_detect_then_delay_click_with_timeout(
-            images["WORLDM"], "WORLDM", delay_before_click_sec=0.2, timeout_sec=0.5
+            images["WORLDM"], "WORLDM", delay_before_click_sec=0.1, timeout_sec=0.2
         )
 
         # 10
@@ -297,15 +297,15 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         # 13
         time.sleep(0.1)
         wait_until_detect_then_delay_click_with_timeout(
-            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.3, timeout_sec=1.0
+            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.2, timeout_sec=0.4
         )
         time.sleep(0.1)
         wait_until_detect_then_delay_click_with_timeout(
-            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.2, timeout_sec=1.0
+            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.1, timeout_sec=0.2
         )
         time.sleep(0.1)
         wait_until_detect_then_delay_click_with_timeout(
-            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.1, timeout_sec=1.0
+            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.1, timeout_sec=0.1
         )        
         
         # 14
