@@ -337,7 +337,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
         # 20-28
         gold_found = wait_until_detect_then_delay_click_with_timeout(
-            images["GOLD"], "GOLD", delay_before_click_sec=0.3, timeout_sec=7.0, click_kwargs=gold_click
+            images["GOLD"], "GOLD", delay_before_click_sec=0.3, timeout_sec=5.0, click_kwargs=gold_click
         )
 
         if not gold_found:
@@ -360,6 +360,12 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                     )
 
             try_map_with_result3_retries(map_timeout=2)
+
+            time.sleep(0.1)
+            wait_until_detect_then_delay_click_with_timeout(
+                images["TRAVEL"], "RESULT3", delay_before_click_sec=0.2, timeout_sec=1, click_kwargs=strong_single
+            )
+
 
             time.sleep(0.1)
             wait_until_detect_then_delay_click_with_timeout(
