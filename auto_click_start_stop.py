@@ -363,9 +363,12 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
             time.sleep(0.1)
             wait_until_detect_then_delay_click_with_timeout(
-                images["RESULT3"], "RESULT3", delay_before_click_sec=0.2, timeout_sec=1, click_kwargs=strong_single
+                images["RESULT3"], "RESULT3", delay_before_click_sec=0.2, timeout_sec=0.3, click_kwargs=strong_single
             )
-
+            time.sleep(0.1)
+            wait_until_detect_then_delay_click_with_timeout(
+                images["CROSS2"], "CROSS2", delay_before_click_sec=0.2, timeout_sec=0.2, click_kwargs=strong_single
+            )
 
             time.sleep(0.1)
             wait_until_detect_then_delay_click_with_timeout(
@@ -392,6 +395,8 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                 ("RESULT3", 0.2, strong_single),
                 ("RESULT3", 0.2, strong_single),
                 ("RESULT4", 0.3, strong_single),
+                ("CROSS2", 0.1, strong_single),
+                ("CROSS2", 0.1, strong_single),
                 ("MAP", 2, strong_single),
                 ("RESULT3", 0.2, strong_single),
                 ("TRAVEL", 3, strong_single),
