@@ -410,8 +410,8 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                 ("MAP", 2, strong_single),
                 ("TRAVEL", 0.5, strong_single),
                 ("TRAVEL", 0.1, strong_single),
-                ("YES", 1.2, strong_single),
-                ("YES", 1.2, strong_single),
+                ("YES", 2, strong_single),
+                ("YES", 2, strong_single),
             ]
 
             for label, timeout, kwargs in tail:
