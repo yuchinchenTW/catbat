@@ -313,15 +313,15 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         #launch_package(FIREWALL_PACKAGE)
 
         # 15
-        time.sleep(0.1)
+        time.sleep(0.2)
         run_adb(["shell", "su", "0", "settings", "put", "global", "auto_time", "1"])
 
         # 16
         #time.sleep(0.3)
-        launch_package(GAME_PACKAGE)
+        #launch_package(GAME_PACKAGE)
 
         # 17
-        time.sleep(0.6)
+        time.sleep(1)
         launch_package(FIREWALL_PACKAGE)
         #        #adb shell su 0 service call connectivity 48 i32 0 s16 app.greyshirts.firewall i32 0
         #adb shell su 0 am force-stop app.greyshirts.firewall 
