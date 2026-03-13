@@ -2,13 +2,13 @@
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
-
+import sys
 import pyautogui
 
 
 BASE_DIR = Path(__file__).resolve().parent
 ADB_SERIAL = "emulator-5554"
-CONFIDENCE = 0.90
+CONFIDENCE = 0.82
 POLL_INTERVAL = 0.3
 ADB_RETRIES = 5
 ADB_RETRY_DELAY = 1.5
@@ -17,14 +17,41 @@ GAME_PACKAGE = "jp.co.ponos.battlecatstw"
 FIREWALL_PACKAGE = "app.greyshirts.firewall"
 pyautogui.PAUSE = 0
 
+TARGET_IMAGE = str(Path(__file__).with_name("silver.png"))
+SCROLL_AMOUNT = -280       # Negative scrolls down; units are "wheel clicks"
+SCROLL_PAUSE = 0.35        # Pause after each scroll (seconds)
+MAX_SCROLLS = 400          # Safety cap to avoid infinite scrolling
+POST_FIND_DELAY = 0.20     # Delay before clicking once detected
+EXTRA_SCROLLS_AFTER_DETECT = 1
+EXTRA_SCROLL_PAUSE = 0.18
+POST_SCROLL_AMOUNT = -40   # Smaller nudge after detection to avoid overshoot
+REDETECT_RETRIES = 8
+REDETECT_PAUSE = 0.08
+POST_DETECT_WAIT = 1.0
+USE_ADB_SCROLL_FALLBACK = True
+# Coordinates for ADB swipe (x1 y1 x2 y2 duration_ms); tuned for 1080x1920 emulator
+ADB_SWIPE_ARGS = ["shell", "input", "swipe", "540", "1600", "540", "900", "180"]
+
+
+def perform_scroll_step() -> None:
+    """Scroll down once; use mouse wheel, and optionally an ADB swipe fallback."""
+    pyautogui.scroll(SCROLL_AMOUNT)
+    time.sleep(SCROLL_PAUSE)
+    if USE_ADB_SCROLL_FALLBACK:
+        try:
+            run_adb(ADB_SWIPE_ARGS)
+        except Exception as exc:  # noqa: BLE001
+            print(f"[WARN] adb swipe failed (continuing): {exc}")
 
 def build_image_map() -> dict[str, str]:
     image_paths = {
         "SKIP": BASE_DIR / "skip.png",
         "START_GREEN": BASE_DIR / "start_green.png",
         "STARTM": BASE_DIR / "startm.png",
-        "WORLDM": BASE_DIR / "worldm.png",
-        "WORLDM2": BASE_DIR / "worldm2.png",
+        "WORLDM": BASE_DIR / "worldevent.png",
+        "WORLDM2": BASE_DIR / "worldevent.png",
+        "OK": BASE_DIR / "worldeventok.png",
+        "STARTBATTLE": BASE_DIR / "worldeventstartbattle.png",
         "CROSS": BASE_DIR / "cross.png",
         "CROSS2": BASE_DIR / "cross2.png",
         "DODO": BASE_DIR / "dodo.png",
@@ -125,7 +152,7 @@ def locate_center(image_path: str):
         return pyautogui.locateCenterOnScreen(
             image_path,
             confidence=CONFIDENCE,
-            grayscale=False,
+            grayscale=True,
         )
     except pyautogui.ImageNotFoundException:
         return None
@@ -217,24 +244,24 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
     try:
         # 1
-        run_adb(["shell", "am", "force-stop", GAME_PACKAGE])
-        run_adb(["shell", "su", "0", "settings", "put", "global", "auto_time", "0"])
+        #run_adb(["shell", "am", "force-stop", GAME_PACKAGE])
+        #run_adb(["shell", "su", "0", "settings", "put", "global", "auto_time", "0"])
 
         # 2
         time.sleep(0.4)
         adb_date = (datetime.now() - timedelta(days=2)).strftime("%m%d%H%M%Y.%S")
-        run_adb(["shell", "su", "0", "date", adb_date])
+        #run_adb(["shell", "su", "0", "date", adb_date])
 
         # 3
         time.sleep(0.1)
         launch_package(GAME_PACKAGE)
 
         # 4
-        wait_until_detect(images["SKIP"], "SKIP-DETECT-1")
-        launch_package(FIREWALL_PACKAGE)
+        #wait_until_detect(images["SKIP"], "SKIP-DETECT-1")
+        #launch_package(FIREWALL_PACKAGE)
 
         # 5
-        wait_until_detect_and_click(images["START_GREEN"], "START-GREEN")
+        #wait_until_detect_and_click(images["START_GREEN"], "START-GREEN")
 
         #adb shell su 0 am force-stop app.greyshirts.firewall 
         #adb shell su 0 service call connectivity 48 i32 0 s16 app.greyshirts.firewall i32 0
@@ -242,7 +269,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         #run_adb(["shell", "su", "0", "service", "call", "connectivity", "48", "i32", "0", "s16", "app.greyshirts.firewall", "i32", "0"])
 
         # 6
-        launch_package(GAME_PACKAGE)
+        #launch_package(GAME_PACKAGE)
 
         # 7
         time.sleep(0.1)
@@ -263,10 +290,10 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         )
 
         # 9
-        time.sleep(0.3)
-        wait_until_detect_then_delay_click_with_timeout(
-            images["WORLDM"], "WORLDM", delay_before_click_sec=0.1, timeout_sec=0.2
-        )
+        #time.sleep(0.3)
+       # wait_until_detect_then_delay_click_with_timeout(
+       #     images["WORLDM"], "WORLDM", delay_before_click_sec=0.1, timeout_sec=0.2
+       # )
 
         # 10
         time.sleep(0.3)
@@ -275,6 +302,63 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         ):
             print("WORLDM2 miss -> restart next cycle")
             return True  # do not stop; move to next loop
+
+        time.sleep(0.3)
+        if not wait_until_detect_then_delay_click_with_timeout(
+            images["OK"], "OK", delay_before_click_sec=0.2, timeout_sec=2.0
+        ):
+            print("WORLDM2 miss -> restart next cycle")
+            return True  # do not stop; move to next loop            
+            #STARTBATTLE
+
+        time.sleep(0.3)
+        if not wait_until_detect_then_delay_click_with_timeout(
+            images["STARTBATTLE"], "STARTBATTLE", delay_before_click_sec=0.2, timeout_sec=2.0
+        ):
+            print("WORLDM2 miss -> restart next cycle")
+            return True  # do not stop; move to next loop
+
+        if not Path(TARGET_IMAGE).exists():
+            raise FileNotFoundError(f"target image not found: {TARGET_IMAGE}")
+
+        print("[SCAN] Starting scroll-search for target image...", flush=True)
+
+        for i in range(1, MAX_SCROLLS + 1):
+            print(f"[SCAN] iter {i}: locating...", flush=True)
+            point = locate_center(TARGET_IMAGE)
+            if point:
+                print(f"[INFO] Found target at {point}. Clicking...", flush=True)
+                for _ in range(EXTRA_SCROLLS_AFTER_DETECT):
+                    pyautogui.scroll(POST_SCROLL_AMOUNT)
+                    time.sleep(EXTRA_SCROLL_PAUSE)
+
+                # Extra wait to stabilize, then re-detect after the additional scroll(s)
+                time.sleep(POST_DETECT_WAIT)
+
+                # Re-detect after the additional scroll(s)
+                refreshed_point = None
+                for _ in range(REDETECT_RETRIES):
+                    refreshed_point = locate_center(TARGET_IMAGE)
+                    if refreshed_point:
+                        break
+                    time.sleep(REDETECT_PAUSE)
+
+                click_point = refreshed_point or point
+
+                time.sleep(POST_FIND_DELAY)
+                pyautogui.click(click_point.x, click_point.y, clicks=3, interval=0.05)
+                print("[INFO] Done.")
+                return 0
+
+            print(f"[SCAN] iter {i}: scrolling...", flush=True)
+            try:
+                perform_scroll_step()
+            except Exception as exc:  # noqa: BLE001
+                print(f"[WARN] scroll step failed, continuing: {exc}", flush=True)
+
+        print("[WARN] Max scrolls reached without finding target.")
+        return True
+
 
         # 11
         time.sleep(0.2)
