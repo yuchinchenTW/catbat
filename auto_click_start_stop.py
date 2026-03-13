@@ -335,6 +335,10 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         launch_package(GAME_PACKAGE)
         #time.sleep(1)
 
+        time.sleep(1)
+        wait_until_detect_then_delay_click_with_timeout(
+            images["RESULT3"], "RESULT3", delay_before_click_sec=0.3, timeout_sec=0.3, click_kwargs=strong_single
+        )   
         time.sleep(0.2)
         wait_until_detect_then_delay_click_with_timeout(
             images["RESULT3"], "RESULT3", delay_before_click_sec=0.3, timeout_sec=0.3, click_kwargs=strong_single
