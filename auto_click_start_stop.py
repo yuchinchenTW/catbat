@@ -386,11 +386,17 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             )
             time.sleep(0.3)
             wait_until_detect_then_delay_click_with_timeout(
-                images["YES"], "YES", delay_before_click_sec=0.3, timeout_sec=1, click_kwargs=strong_single
+                images["YES"], "YES", delay_before_click_sec=0.3, timeout_sec=2, click_kwargs=strong_single
             )
+
+            time.sleep(0.1)
+            wait_until_detect_then_delay_click_with_timeout(
+                images["TRAVEL"], "TRAVEL", delay_before_click_sec=0.2, timeout_sec=0.2, click_kwargs=strong_single
+            )            
+            
             time.sleep(0.3)
             wait_until_detect_then_delay_click_with_timeout(
-                images["YES"], "YES-SECOND", delay_before_click_sec=0.3, timeout_sec=1, click_kwargs=strong_single
+                images["YES"], "YES-SECOND", delay_before_click_sec=0.3, timeout_sec=2, click_kwargs=strong_single
             )
 
         else:
@@ -411,6 +417,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                 ("TRAVEL", 0.5, strong_single),
                 ("TRAVEL", 0.1, strong_single),
                 ("YES", 2, strong_single),
+                ("TRAVEL", 0.1, strong_single),
                 ("YES", 2, strong_single),
             ]
 
