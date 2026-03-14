@@ -23,8 +23,9 @@ def build_image_map() -> dict[str, str]:
         "SKIP": BASE_DIR / "skip.png",
         "START_GREEN": BASE_DIR / "start_green.png",
         "STARTM": BASE_DIR / "startm.png",
-        "WORLDM": BASE_DIR / "worldm.png",
-        "WORLDM2": BASE_DIR / "worldm2.png",
+        "WORLDM": BASE_DIR / "worldevent.png",
+        "WORLDM2": BASE_DIR / "worldevent.png",
+        "OK": BASE_DIR / "worldeventok.png",
         "CROSS": BASE_DIR / "cross.png",
         "CROSS2": BASE_DIR / "cross2.png",
         "DODO": BASE_DIR / "dodo.png",
@@ -263,10 +264,10 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         )
 
         # 9
-        time.sleep(0.3)
-        wait_until_detect_then_delay_click_with_timeout(
-            images["WORLDM"], "WORLDM", delay_before_click_sec=0.1, timeout_sec=0.2
-        )
+       # time.sleep(0.3)
+       # wait_until_detect_then_delay_click_with_timeout(
+       #     images["WORLDM"], "WORLDM", delay_before_click_sec=0.1, timeout_sec=0.2
+       # )
 
         # 10
         time.sleep(0.3)
@@ -275,6 +276,14 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         ):
             print("WORLDM2 miss -> restart next cycle")
             return True  # do not stop; move to next loop
+
+        time.sleep(0.3)
+        if not wait_until_detect_then_delay_click_with_timeout(
+            images["OK"], "OK", delay_before_click_sec=0.2, timeout_sec=2.0
+        ):
+            print("WORLDM2 miss -> restart next cycle")
+            return True  # do not stop; move to next loop            
+            #STARTBATTLE
 
         # 11
         time.sleep(0.2)
