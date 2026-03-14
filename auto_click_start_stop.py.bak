@@ -318,8 +318,8 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         )        
         
         # 14
-        time.sleep(0.1)
-        launch_package(FIREWALL_PACKAGE)
+        #time.sleep(0.1)
+        #launch_package(FIREWALL_PACKAGE)
 
         # 15
         time.sleep(0.2)

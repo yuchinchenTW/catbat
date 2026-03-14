@@ -1,4 +1,4 @@
-﻿import subprocess
+import subprocess
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -23,11 +23,9 @@ def build_image_map() -> dict[str, str]:
         "SKIP": BASE_DIR / "skip.png",
         "START_GREEN": BASE_DIR / "start_green.png",
         "STARTM": BASE_DIR / "startm.png",
-        "WORLDM": BASE_DIR / "worldevent.png",
-        "WORLDM2": BASE_DIR / "worldevent.png",
-        "OK": BASE_DIR / "worldeventok.png",
+        "WORLDM": BASE_DIR / "worldm.png",
+        "WORLDM2": BASE_DIR / "worldm2.png",
         "CROSS": BASE_DIR / "cross.png",
-        "CROSS2": BASE_DIR / "cross2.png",
         "DODO": BASE_DIR / "dodo.png",
         "GOLD": BASE_DIR / "gold.png",
         "RESULT0": BASE_DIR / "result0.png",
@@ -203,13 +201,13 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
     tail_steps = [
         ("GOLD", 7.0, gold_click),
-        ("RESULT0", 1.5, strong_single),
-        ("RESULT0-1", 1.5, strong_single),
+        ("RESULT0", 1, strong_single),
+        ("RESULT0-1", 1, strong_single),
         ("RESULT", 7.0, strong_single),
-        ("RESULT1", 0.2, strong_single),
-        ("RESULT2", 0.2, strong_single),
-        ("RESULT3", 0.2, strong_single),
-        ("RESULT4", 0.2, strong_single),
+        ("RESULT1", 0.3, strong_single),
+        ("RESULT2", 0.3, strong_single),
+        ("RESULT3", 0.3, strong_single),
+        ("RESULT4", 0.3, strong_single),
         ("MAP", 3, strong_single),
         ("TRAVEL", 3, strong_single),
         ("YES", 1.2, strong_single),
@@ -222,7 +220,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         run_adb(["shell", "su", "0", "settings", "put", "global", "auto_time", "0"])
 
         # 2
-        time.sleep(0.4)
+        time.sleep(0.3)
         adb_date = (datetime.now() - timedelta(days=2)).strftime("%m%d%H%M%Y.%S")
         run_adb(["shell", "su", "0", "date", adb_date])
 
@@ -237,92 +235,72 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         # 5
         wait_until_detect_and_click(images["START_GREEN"], "START-GREEN")
 
-        #adb shell su 0 am force-stop app.greyshirts.firewall 
-        #adb shell su 0 service call connectivity 48 i32 0 s16 app.greyshirts.firewall i32 0
-        
-        #run_adb(["shell", "su", "0", "service", "call", "connectivity", "48", "i32", "0", "s16", "app.greyshirts.firewall", "i32", "0"])
-
         # 6
         launch_package(GAME_PACKAGE)
 
         # 7
-        time.sleep(0.1)
+        time.sleep(0.3)
         wait_until_detect_and_click(images["SKIP"], "SKIP-CLICK-2")
         wait_until_detect_then_delay_click_with_timeout(
             images["SKIP"], "SKIP-CLICK-2", delay_before_click_sec=0.3, timeout_sec=1
         )
-        time.sleep(0.5)
+
         # 8
         wait_until_detect_then_delay_click_with_timeout(
-            images["STARTM"], "STARTM", delay_before_click_sec=0.5, timeout_sec=1.0, click_kwargs=heavy_startm, reuse_detect_point=True
-        )
-        wait_until_detect_then_delay_click_with_timeout(
-            images["STARTM"], "STARTM", delay_before_click_sec=0.2, timeout_sec=0.3, click_kwargs=heavy_startm, reuse_detect_point=True
-        )
-        wait_until_detect_then_delay_click_with_timeout(
-            images["STARTM"], "STARTM", delay_before_click_sec=0.2, timeout_sec=0.3, click_kwargs=heavy_startm, reuse_detect_point=True
+            images["STARTM"], "STARTM", delay_before_click_sec=0.1, timeout_sec=4.0, click_kwargs=heavy_startm, reuse_detect_point=True
         )
 
+        wait_until_detect_then_delay_click_with_timeout(
+            images["STARTM"], "STARTM", delay_before_click_sec=0.1, timeout_sec=0.5, click_kwargs=heavy_startm, reuse_detect_point=True
+        )
+
+        wait_until_detect_then_delay_click_with_timeout(
+            images["STARTM"], "STARTM", delay_before_click_sec=0.1, timeout_sec=0.5, click_kwargs=heavy_startm, reuse_detect_point=True
+        )
         # 9
-       # time.sleep(0.3)
-       # wait_until_detect_then_delay_click_with_timeout(
-       #     images["WORLDM"], "WORLDM", delay_before_click_sec=0.1, timeout_sec=0.2
-       # )
+        time.sleep(0.3)
+        wait_until_detect_then_delay_click_with_timeout(
+            images["WORLDM"], "WORLDM", delay_before_click_sec=0.0, timeout_sec=1.0
+        )
 
         # 10
-        time.sleep(0.3)
+        time.sleep(0.1)
         if not wait_until_detect_then_delay_click_with_timeout(
-            images["WORLDM2"], "WORLDM2", delay_before_click_sec=0.2, timeout_sec=2.0
+            images["WORLDM2"], "WORLDM2", delay_before_click_sec=0.0, timeout_sec=2.0
         ):
-            print("WORLDM2 miss -> restart next cycle")
-            return True  # do not stop; move to next loop
-
-        time.sleep(0.3)
-        if not wait_until_detect_then_delay_click_with_timeout(
-            images["OK"], "OK", delay_before_click_sec=0.2, timeout_sec=2.0
-        ):
-            print("WORLDM2 miss -> restart next cycle")
-            return True  # do not stop; move to next loop            
-            #STARTBATTLE
+            print("stop: WORLDM2 not detected in 2 seconds.")
+            return False
 
         # 11
-        time.sleep(0.2)
+        time.sleep(0.3)
         wait_until_detect_then_delay_click_with_timeout(
-            images["CROSS"], "CROSS", delay_before_click_sec=0.6, timeout_sec=1
+            images["CROSS"], "CROSS", delay_before_click_sec=0.3, timeout_sec=1
         )
-        time.sleep(0.1)
+        time.sleep(0.5)
         wait_until_detect_then_delay_click_with_timeout(
-            images["CROSS"], "CROSS", delay_before_click_sec=0.2, timeout_sec=1
+            images["CROSS"], "CROSS", delay_before_click_sec=0.3, timeout_sec=1
         )
 
         # 12
         time.sleep(0.1)
         if not wait_until_detect_then_delay_click_with_timeout(
-            images["DODO"], "DODO-TRIPLE", delay_before_click_sec=0.3, timeout_sec=1.0, click_kwargs=triple_dodo
+            images["DODO"], "DODO-TRIPLE", delay_before_click_sec=0.6, timeout_sec=2.0, click_kwargs=triple_dodo
         ):
-            print("DODO first miss -> restart next cycle")
-            return True  # do not stop; move to next loop
+            print("stop: DODO (first) not detected in time.")
+            return False
 
         # 13
         time.sleep(0.1)
         wait_until_detect_then_delay_click_with_timeout(
-            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.2, timeout_sec=0.4
+            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.5, timeout_sec=1.0
         )
-        time.sleep(0.1)
-        wait_until_detect_then_delay_click_with_timeout(
-            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.1, timeout_sec=0.2
-        )
-        time.sleep(0.1)
-        wait_until_detect_then_delay_click_with_timeout(
-            images["DODO"], "DODO-ONCE", delay_before_click_sec=0.1, timeout_sec=0.1
-        )        
-        
+
         # 14
         time.sleep(0.1)
         launch_package(FIREWALL_PACKAGE)
 
         # 15
-        time.sleep(0.2)
+        time.sleep(0.1)
         run_adb(["shell", "su", "0", "settings", "put", "global", "auto_time", "1"])
 
         # 16
@@ -332,145 +310,77 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         # 17
         time.sleep(1)
         launch_package(FIREWALL_PACKAGE)
-        #        #adb shell su 0 service call connectivity 48 i32 0 s16 app.greyshirts.firewall i32 0
-        #adb shell su 0 am force-stop app.greyshirts.firewall 
 
         # 18
         wait_until_detect_and_click(images["START_RED"], "START-RED")
-       # run_adb(["shell", "su", "0", "am", "force-stop", "app.greyshirts.firewall"])
 
         # 19
         time.sleep(0.1)
         launch_package(GAME_PACKAGE)
-        #time.sleep(1)
-
         time.sleep(1)
-        wait_until_detect_then_delay_click_with_timeout(
-            images["RESULT3"], "RESULT3", delay_before_click_sec=0.3, timeout_sec=0.3, click_kwargs=strong_single
-        )   
-        time.sleep(0.2)
-        wait_until_detect_then_delay_click_with_timeout(
-            images["RESULT3"], "RESULT3", delay_before_click_sec=0.3, timeout_sec=0.3, click_kwargs=strong_single
-        )   
-
 
         # 20-28
         gold_found = wait_until_detect_then_delay_click_with_timeout(
-            images["GOLD"], "GOLD", delay_before_click_sec=0.1, timeout_sec=3.0, click_kwargs=gold_click
+            images["GOLD"], "GOLD", delay_before_click_sec=0.3, timeout_sec=7.0, click_kwargs=gold_click
         )
-        
-     
 
         if not gold_found:
             print("GOLD not detected, skip to MAP/TRAVEL/YES sequence")
-
-            time.sleep(0.1)
-            wait_until_detect_then_delay_click_with_timeout(
-                images["CROSS2"], "CROSS2", delay_before_click_sec=0.2, timeout_sec=0.2, click_kwargs=strong_single
-            )
-
-            def try_map_with_result3_retries(map_timeout: float) -> None:
-                time.sleep(0.2)
+            def map_travel_yes(extra_yes: bool = False):
+                time.sleep(0.5)
                 map_ok = wait_until_detect_then_delay_click_with_timeout(
-                    images["MAP"], "MAP", delay_before_click_sec=0.33, timeout_sec=map_timeout, click_kwargs=strong_single
+                    images["MAP"], "MAP", delay_before_click_sec=0.3, timeout_sec=1.0, click_kwargs=strong_single
                 )
                 if not map_ok:
-                    for _ in range(3):
-                        time.sleep(0.2)
+                    for _ in range(2):
+                        time.sleep(0.3)
                         wait_until_detect_then_delay_click_with_timeout(
-                            images["RESULT3"], "RESULT3-RETRY", delay_before_click_sec=0.15, timeout_sec=0.33, click_kwargs=strong_single, reuse_detect_point=True
+                            images["RESULT3"], "RESULT3-RETRY", delay_before_click_sec=0.2, timeout_sec=0.5, click_kwargs=strong_single, reuse_detect_point=True
                         )
-                    time.sleep(0.2)
+                    time.sleep(0.3)
                     wait_until_detect_then_delay_click_with_timeout(
-                        images["MAP"], "MAP-RETRY", delay_before_click_sec=0.35, timeout_sec=map_timeout, click_kwargs=strong_single
+                        images["MAP"], "MAP-RETRY", delay_before_click_sec=0.3, timeout_sec=1.0, click_kwargs=strong_single
+                    )
+                time.sleep(0.5)
+                wait_until_detect_then_delay_click_with_timeout(
+                    images["TRAVEL"], "TRAVEL", delay_before_click_sec=0.3, timeout_sec=3, click_kwargs=strong_single
+                )
+                time.sleep(0.5)
+                wait_until_detect_then_delay_click_with_timeout(
+                    images["YES"], "YES", delay_before_click_sec=0.3, timeout_sec=1.2, click_kwargs=strong_single
+                )
+                if extra_yes:
+                    time.sleep(0.3)
+                    wait_until_detect_then_delay_click_with_timeout(
+                        images["YES"], "YES-SECOND", delay_before_click_sec=0.3, timeout_sec=1.2, click_kwargs=strong_single
                     )
 
-            try_map_with_result3_retries(map_timeout=2)
-
-            time.sleep(0.1)
-            wait_until_detect_then_delay_click_with_timeout(
-                images["TRAVEL"], "TRAVEL", delay_before_click_sec=0.1, timeout_sec=1, click_kwargs=strong_single
-            )
-
-
-            time.sleep(0.1)
-            wait_until_detect_then_delay_click_with_timeout(
-                images["TRAVEL"], "TRAVEL", delay_before_click_sec=0.2, timeout_sec=0.2, click_kwargs=strong_single
-            )
-            time.sleep(0.3)
-            wait_until_detect_then_delay_click_with_timeout(
-                images["YES"], "YES", delay_before_click_sec=0.3, timeout_sec=2, click_kwargs=strong_single
-            )
-
-            time.sleep(0.1)
-            wait_until_detect_then_delay_click_with_timeout(
-                images["TRAVEL"], "TRAVEL", delay_before_click_sec=0.2, timeout_sec=0.2, click_kwargs=strong_single
-            )            
-            
-            time.sleep(0.3)
-            wait_until_detect_then_delay_click_with_timeout(
-                images["YES"], "YES-SECOND", delay_before_click_sec=0.3, timeout_sec=2, click_kwargs=strong_single
-            )
+            map_travel_yes(extra_yes=True)
 
         else:
-            # gold found path with MAP fallback
             tail = [
                 ("RESULT0", 1, strong_single),
-                ("RESULT0-1", 1.5, strong_single),
-                ("RESULT", 4.0, strong_single),
+                ("RESULT0-1", 1, strong_single),
+                ("RESULT", 7.0, strong_single),
                 ("RESULT1", 0.3, strong_single),
                 ("RESULT2", 0.3, strong_single),
-                ("RESULT3", 0.2, strong_single),
-                ("RESULT3", 0.2, strong_single),
-                ("RESULT3", 0.2, strong_single),
+                ("RESULT3", 0.1, strong_single),
+                ("RESULT3", 0.1, strong_single),
+                ("RESULT3", 0.1, strong_single),
+                ("RESULT3", 0.1, strong_single),
+                ("RESULT3", 0.1, strong_single),
                 ("RESULT4", 0.3, strong_single),
-                ("CROSS2", 0.1, strong_single),
-                ("CROSS2", 0.1, strong_single),
-                ("MAP", 2, strong_single),
-                ("TRAVEL", 0.5, strong_single),
-                ("TRAVEL", 0.1, strong_single),
-                ("YES", 2, strong_single),
-                ("TRAVEL", 0.1, strong_single),
-                ("YES", 2, strong_single),
+                ("MAP", 1.5, strong_single),
+                ("TRAVEL", 3, strong_single),
+                ("YES", 1.2, strong_single),
+                ("YES", 1.2, strong_single),
             ]
 
             for label, timeout, kwargs in tail:
-                time.sleep(0.1)
-                if label == "MAP":
-                    map_ok = wait_until_detect_then_delay_click_with_timeout(
-                        images[label], label, delay_before_click_sec=0.3, timeout_sec=timeout, click_kwargs=kwargs
-                    )
-                    if not map_ok:
-                        for _ in range(3):
-                            time.sleep(0.1)
-                            wait_until_detect_then_delay_click_with_timeout(
-                                images["RESULT3"], "RESULT3-RETRY", delay_before_click_sec=0.2, timeout_sec=0.4, click_kwargs=strong_single, reuse_detect_point=True
-                            )
-                        time.sleep(0.1)
-                        wait_until_detect_then_delay_click_with_timeout(
-                            images[label], f"{label}-RETRY", delay_before_click_sec=0.3, timeout_sec=timeout, click_kwargs=kwargs
-                        )
-                else:
-                    if label == "RESULT":
-                       time.sleep(0.1)
-                       wait_until_detect_then_delay_click_with_timeout(
-                           images[label], label, delay_before_click_sec=0.2, timeout_sec=1, click_kwargs=kwargs
-                       )
-                       wait_until_detect_then_delay_click_with_timeout(
-                           images[label], label, delay_before_click_sec=0.2, timeout_sec=0.2, click_kwargs=kwargs
-                       )
-
-                       wait_until_detect_then_delay_click_with_timeout(
-                           images[label], label, delay_before_click_sec=0.2, timeout_sec=0.2, click_kwargs=kwargs
-                       )                    
-
-                       wait_until_detect_then_delay_click_with_timeout(
-                           images[label], label, delay_before_click_sec=0.2, timeout_sec=0.2, click_kwargs=kwargs
-                       )                    
-                    else:
-                       wait_until_detect_then_delay_click_with_timeout(
-                           images[label], label, delay_before_click_sec=0.5, timeout_sec=timeout, click_kwargs=kwargs
-                       )
+                time.sleep(0.5)
+                wait_until_detect_then_delay_click_with_timeout(
+                    images[label], label, delay_before_click_sec=0.3, timeout_sec=timeout, click_kwargs=kwargs
+                )
 
         print(f"=== cycle {cycle_idx} completed ===")
         return True
