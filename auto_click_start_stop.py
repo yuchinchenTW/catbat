@@ -360,7 +360,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             images["RESULT"], "RESULT", delay_before_click_sec=0.1, timeout_sec=0.2, click_kwargs=strong_single
         )          
         # 20-28
-      # gold_found = wait_until_detect_then_delay_click_with_timeout(
+        gold_found = wait_until_detect_then_delay_click_with_timeout(
             images["GOLD"], "GOLD", delay_before_click_sec=0.14, timeout_sec=5.0, click_kwargs=gold_click
         )
 
