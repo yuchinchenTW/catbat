@@ -23,9 +23,8 @@ def build_image_map() -> dict[str, str]:
         "SKIP": BASE_DIR / "skip.png",
         "START_GREEN": BASE_DIR / "start_green.png",
         "STARTM": BASE_DIR / "startm.png",
-        "WORLDM": BASE_DIR / "worldevent.png",
-        "WORLDM2": BASE_DIR / "worldevent.png",
-        "OK": BASE_DIR / "worldeventok.png",
+        "WORLDM": BASE_DIR / "worldm.png",
+        "WORLDM2": BASE_DIR / "worldm2.png",
         "CROSS": BASE_DIR / "cross.png",
         "CROSS2": BASE_DIR / "cross2.png",
         "DODO": BASE_DIR / "dodo.png",
@@ -227,7 +226,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         run_adb(["shell", "su", "0", "date", adb_date])
 
         # 3
-        time.sleep(0.3)
+        time.sleep(0.1)
         launch_package(GAME_PACKAGE)
 
         # 4
@@ -264,10 +263,10 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         )
 
         # 9
-       # time.sleep(0.3)
-       # wait_until_detect_then_delay_click_with_timeout(
-       #     images["WORLDM"], "WORLDM", delay_before_click_sec=0.1, timeout_sec=0.2
-       # )
+        time.sleep(0.3)
+        wait_until_detect_then_delay_click_with_timeout(
+            images["WORLDM"], "WORLDM", delay_before_click_sec=0.1, timeout_sec=0.2
+        )
 
         # 10
         time.sleep(0.3)
@@ -276,14 +275,6 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         ):
             print("WORLDM2 miss -> restart next cycle")
             return True  # do not stop; move to next loop
-
-        time.sleep(0.3)
-        if not wait_until_detect_then_delay_click_with_timeout(
-            images["OK"], "OK", delay_before_click_sec=0.2, timeout_sec=2.0
-        ):
-            print("WORLDM2 miss -> restart next cycle")
-            return True  # do not stop; move to next loop            
-            #STARTBATTLE
 
         # 11
         time.sleep(0.2)
@@ -318,19 +309,19 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         )        
         
         # 14
-        time.sleep(0.1)
-        launch_package(FIREWALL_PACKAGE)
+        #time.sleep(0.1)
+        #launch_package(FIREWALL_PACKAGE)
 
         # 15
-        time.sleep(0.2)
+        time.sleep(0.1)
         run_adb(["shell", "su", "0", "settings", "put", "global", "auto_time", "1"])
 
         # 16
-        time.sleep(0.3)
+        #time.sleep(0.3)
         launch_package(GAME_PACKAGE)
 
         # 17
-        time.sleep(1)
+        time.sleep(0.6)
         launch_package(FIREWALL_PACKAGE)
         #        #adb shell su 0 service call connectivity 48 i32 0 s16 app.greyshirts.firewall i32 0
         #adb shell su 0 am force-stop app.greyshirts.firewall 
@@ -344,10 +335,6 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         launch_package(GAME_PACKAGE)
         #time.sleep(1)
 
-        time.sleep(1)
-        wait_until_detect_then_delay_click_with_timeout(
-            images["RESULT3"], "RESULT3", delay_before_click_sec=0.3, timeout_sec=0.3, click_kwargs=strong_single
-        )   
         time.sleep(0.2)
         wait_until_detect_then_delay_click_with_timeout(
             images["RESULT3"], "RESULT3", delay_before_click_sec=0.3, timeout_sec=0.3, click_kwargs=strong_single
@@ -356,7 +343,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
         # 20-28
         gold_found = wait_until_detect_then_delay_click_with_timeout(
-            images["GOLD"], "GOLD", delay_before_click_sec=0.1, timeout_sec=3.0, click_kwargs=gold_click
+            images["GOLD"], "GOLD", delay_before_click_sec=0.14, timeout_sec=5.0, click_kwargs=gold_click
         )
         
      
