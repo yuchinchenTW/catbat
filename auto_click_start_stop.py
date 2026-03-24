@@ -560,7 +560,7 @@ def main() -> None:
     pyautogui.FAILSAFE = True
     print("tip: move mouse to top-left corner quickly to abort.")
 
-    for i in range(1, 2):
+    for i in range(1, 2222):
         ok = run_cycle(images, i)
         if not ok:
             print(f"stop: aborted at cycle {i}.")
