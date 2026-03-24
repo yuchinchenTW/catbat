@@ -506,7 +506,12 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             wait_until_detect_then_delay_click_with_timeout(
                 images["STARTBATTLE"], "STARTBATTLE", delay_before_click_sec=0.2, timeout_sec=0.2
             )          
-         
+            wait_until_detect_then_delay_click_with_timeout(
+                images["STARTBATTLE"], "STARTBATTLE", delay_before_click_sec=0.2, timeout_sec=0.2
+            )  
+            wait_until_detect_then_delay_click_with_timeout(
+                images["STARTBATTLE"], "STARTBATTLE", delay_before_click_sec=0.2, timeout_sec=0.2
+            )              
             print("[SCAN] Starting scroll-search for target image...", flush=True)
 
             target_clicked = False
