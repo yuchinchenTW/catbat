@@ -24,7 +24,7 @@ MAX_SCROLLS = 200          # Safety cap to avoid infinite scrolling
 POST_FIND_DELAY = 1     # Delay before clicking once detected
 EXTRA_SCROLLS_AFTER_DETECT = 1
 EXTRA_SCROLL_PAUSE = 0.18
-POST_SCROLL_AMOUNT = -40   # Smaller nudge after detection to avoid overshoot
+POST_SCROLL_AMOUNT = -40   # Used only when mouse-wheel scrolling is enabled
 REDETECT_RETRIES = 8
 REDETECT_PAUSE = 0.08
 POST_DETECT_WAIT = 1.0
@@ -34,7 +34,8 @@ USE_MOUSE_SCROLL = False
 USE_ADB_SCROLL_FALLBACK = True
 # This screen responds to touch-drag more reliably than mouse wheel.
 # Keep the swipe in the same lane that previously worked, but slow it down to avoid tap-like input.
-ADB_SWIPE_ARGS = ["shell", "input", "swipe", "780", "450", "780", "120", "320"]
+ADB_SWIPE_ARGS = ["shell", "input", "swipe", "780", "450", "780", "120", "640"]
+ADB_BACKTRACK_SWIPE_ARGS = ["shell", "input", "swipe", "780", "180", "780", "420", "420"]
 
 
 def perform_scroll_step() -> None:
@@ -48,6 +49,31 @@ def perform_scroll_step() -> None:
             time.sleep(SCROLL_PAUSE)
         except Exception as exc:  # noqa: BLE001
             print(f"[WARN] adb swipe failed (continuing): {exc}")
+
+
+def perform_backtrack_step() -> None:
+    """Scroll back up a little when post-detect nudge overshoots the target."""
+    if USE_MOUSE_SCROLL:
+        pyautogui.scroll(-POST_SCROLL_AMOUNT)
+        time.sleep(EXTRA_SCROLL_PAUSE)
+    if USE_ADB_SCROLL_FALLBACK:
+        try:
+            run_adb(ADB_BACKTRACK_SWIPE_ARGS)
+            time.sleep(EXTRA_SCROLL_PAUSE)
+        except Exception as exc:  # noqa: BLE001
+            print(f"[WARN] adb backtrack swipe failed (continuing): {exc}")
+
+
+def perform_post_detect_nudge() -> None:
+    if USE_MOUSE_SCROLL:
+        pyautogui.scroll(POST_SCROLL_AMOUNT)
+        time.sleep(EXTRA_SCROLL_PAUSE)
+    elif USE_ADB_SCROLL_FALLBACK:
+        try:
+            run_adb(ADB_SWIPE_ARGS)
+            time.sleep(EXTRA_SCROLL_PAUSE)
+        except Exception as exc:  # noqa: BLE001
+            print(f"[WARN] adb post-detect swipe failed (continuing): {exc}")
 
 def build_image_map() -> dict[str, str]:
     image_paths = {
@@ -72,6 +98,9 @@ def build_image_map() -> dict[str, str]:
         "MAP": BASE_DIR / "map.png",
         "TRAVEL": BASE_DIR / "travel.png",
         "YES": BASE_DIR / "yes.png",
+        "SILVERSTART": BASE_DIR / "silver_battlestart.png",
+        "SILVERGET": BASE_DIR / "silverget.png",
+        "SILVEROK": BASE_DIR / "silverok.png",
     }
 
     missing = [name for name, path in image_paths.items() if not path.exists()]
@@ -347,10 +376,11 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             #STARTBATTLE
 
         #adb shell setprop persist.sys.timezone Asia/Dubai   ///gmt+4
+        #adb shell setprop persist.sys.timezone Europe/Moscow //gmt+3
         #adb shell settings put global auto_time_zone 0
         run_adb(["shell", "settings", "put", "global", "auto_time_zone", "0"])
-        run_adb(["shell", "setprop", "persist.sys.timezone", "Asia/Dubai"])
-
+        run_adb(["shell", "setprop", "persist.sys.timezone", "Europe/Moscow"])
+        
 
 
         time.sleep(0.3)
@@ -365,14 +395,14 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
         print("[SCAN] Starting scroll-search for target image...", flush=True)
 
+        target_clicked = False
         for i in range(1, MAX_SCROLLS + 1):
             print(f"[SCAN] iter {i}: locating...", flush=True)
             point = locate_center(TARGET_IMAGE)
             if point:
                 print(f"[INFO] Found target at {point}. Clicking...", flush=True)
                 for _ in range(EXTRA_SCROLLS_AFTER_DETECT):
-                    pyautogui.scroll(POST_SCROLL_AMOUNT)
-                    time.sleep(EXTRA_SCROLL_PAUSE)
+                    perform_post_detect_nudge()
 
                 # Extra wait to stabilize, then re-detect after the additional scroll(s)
                 time.sleep(POST_DETECT_WAIT)
@@ -380,13 +410,20 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                 # Only click after the target has been re-detected in a stable position.
                 refreshed_point = redetect_stable_target(TARGET_IMAGE)
                 if refreshed_point is None:
-                    print("[WARN] Target moved or vanished after scroll; skip click and keep scanning.", flush=True)
+                    print("[WARN] Target moved or vanished after scroll; backtracking before continuing.", flush=True)
+                    for _ in range(EXTRA_SCROLLS_AFTER_DETECT):
+                        perform_backtrack_step()
+                    time.sleep(POST_DETECT_WAIT)
+                    refreshed_point = redetect_stable_target(TARGET_IMAGE)
+                if refreshed_point is None:
+                    print("[WARN] Target still not stable after backtrack; keep scanning.", flush=True)
                     continue
 
                 time.sleep(POST_FIND_DELAY)
                 click_point(refreshed_point, clicks=3, interval=0.05, hold=0.03)
                 print("[INFO] Done.")
-                return 0
+                target_clicked = True
+                break
 
             print(f"[SCAN] iter {i}: scrolling...", flush=True)
             try:
@@ -394,7 +431,31 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             except Exception as exc:  # noqa: BLE001
                 print(f"[WARN] scroll step failed, continuing: {exc}", flush=True)
 
-        print("[WARN] Max scrolls reached without finding target.")
+        if not target_clicked:
+            print("[WARN] Max scrolls reached without finding target.")
+        
+        #SILVERSTART
+        
+        time.sleep(0.2)
+        wait_until_detect_then_delay_click_with_timeout(
+            images["SILVERSTART"], "SILVERSTART", delay_before_click_sec=0.6, timeout_sec=1
+        ) 
+
+        wait_until_detect_then_delay_click_with_timeout(
+            images["SILVERSTART"], "SILVERSTART", delay_before_click_sec=0.6, timeout_sec=0.2
+        ) 
+
+        wait_until_detect_and_click(images["SILVERGET"], "SILVERGET")
+
+        time.sleep(0.2)
+        wait_until_detect_then_delay_click_with_timeout(
+            images["SILVEROK"], "SILVEROK", delay_before_click_sec=0.2, timeout_sec=0.2
+        ) 
+        wait_until_detect_then_delay_click_with_timeout(
+            images["SILVEROK"], "SILVEROK", delay_before_click_sec=0.2, timeout_sec=0.2
+        ) 
+        
+        
         return True
 
 
