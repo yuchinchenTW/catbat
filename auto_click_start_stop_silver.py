@@ -397,7 +397,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         time.sleep(0.1)
         launch_package(FIREWALL_PACKAGE)        
         time.sleep(0.1)
-        wait_until_detect_and_click(images["START_GREEN"], "START-GREEN")
+        wait_until_detect_and_click(images["START_RED"], "START_RED")
         time.sleep(0.1)
         run_adb(["shell", "am", "force-stop", GAME_PACKAGE])
         # 2
