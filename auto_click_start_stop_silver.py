@@ -20,26 +20,32 @@ pyautogui.PAUSE = 0
 TARGET_IMAGE = str(Path(__file__).with_name("silver.png"))
 SCROLL_AMOUNT = -280       # Negative scrolls down; units are "wheel clicks"
 SCROLL_PAUSE = 0.35        # Pause after each scroll (seconds)
-MAX_SCROLLS = 400          # Safety cap to avoid infinite scrolling
-POST_FIND_DELAY = 0.20     # Delay before clicking once detected
+MAX_SCROLLS = 200          # Safety cap to avoid infinite scrolling
+POST_FIND_DELAY = 1     # Delay before clicking once detected
 EXTRA_SCROLLS_AFTER_DETECT = 1
 EXTRA_SCROLL_PAUSE = 0.18
 POST_SCROLL_AMOUNT = -40   # Smaller nudge after detection to avoid overshoot
 REDETECT_RETRIES = 8
 REDETECT_PAUSE = 0.08
 POST_DETECT_WAIT = 1.0
+TARGET_STABLE_TOLERANCE = 12
+TARGET_STABLE_HITS = 2
+USE_MOUSE_SCROLL = False
 USE_ADB_SCROLL_FALLBACK = True
-# Coordinates for ADB swipe (x1 y1 x2 y2 duration_ms); tuned for 1080x1920 emulator
-ADB_SWIPE_ARGS = ["shell", "input", "swipe", "540", "1600", "540", "900", "180"]
+# This screen responds to touch-drag more reliably than mouse wheel.
+# Keep the swipe in the same lane that previously worked, but slow it down to avoid tap-like input.
+ADB_SWIPE_ARGS = ["shell", "input", "swipe", "780", "450", "780", "120", "320"]
 
 
 def perform_scroll_step() -> None:
-    """Scroll down once; use mouse wheel, and optionally an ADB swipe fallback."""
-    pyautogui.scroll(SCROLL_AMOUNT)
-    time.sleep(SCROLL_PAUSE)
+    """Scroll down once using the configured method."""
+    if USE_MOUSE_SCROLL:
+        pyautogui.scroll(SCROLL_AMOUNT)
+        time.sleep(SCROLL_PAUSE)
     if USE_ADB_SCROLL_FALLBACK:
         try:
             run_adb(ADB_SWIPE_ARGS)
+            time.sleep(SCROLL_PAUSE)
         except Exception as exc:  # noqa: BLE001
             print(f"[WARN] adb swipe failed (continuing): {exc}")
 
@@ -169,6 +175,35 @@ def click_point(point, clicks: int = 1, interval: float = 0.0, hold: float = 0.0
             time.sleep(interval)
 
 
+def points_close(a, b, tolerance: int = TARGET_STABLE_TOLERANCE) -> bool:
+    return abs(int(a.x) - int(b.x)) <= tolerance and abs(int(a.y) - int(b.y)) <= tolerance
+
+
+def redetect_stable_target(image_path: str):
+    stable_hits = 0
+    last_point = None
+    for _ in range(REDETECT_RETRIES):
+        point = locate_center(image_path)
+        if point is None:
+            stable_hits = 0
+            last_point = None
+            time.sleep(REDETECT_PAUSE)
+            continue
+
+        if last_point is not None and points_close(last_point, point):
+            stable_hits += 1
+        else:
+            stable_hits = 1
+
+        last_point = point
+        if stable_hits >= TARGET_STABLE_HITS:
+            return point
+
+        time.sleep(REDETECT_PAUSE)
+
+    return None
+
+
 def wait_until_detect_then_delay_click_with_timeout(
     image_path: str,
     label: str,
@@ -251,7 +286,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         time.sleep(0.4)
         adb_date = (datetime.now() - timedelta(days=2)).strftime("%m%d%H%M%Y.%S")
         #run_adb(["shell", "su", "0", "date", adb_date])
-
+        run_adb(["shell", "settings", "put", "global", "auto_time_zone", "1"])
         # 3
         time.sleep(0.1)
         launch_package(GAME_PACKAGE)
@@ -311,6 +346,13 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             return True  # do not stop; move to next loop            
             #STARTBATTLE
 
+        #adb shell setprop persist.sys.timezone Asia/Dubai   ///gmt+4
+        #adb shell settings put global auto_time_zone 0
+        run_adb(["shell", "settings", "put", "global", "auto_time_zone", "0"])
+        run_adb(["shell", "setprop", "persist.sys.timezone", "Asia/Dubai"])
+
+
+
         time.sleep(0.3)
         if not wait_until_detect_then_delay_click_with_timeout(
             images["STARTBATTLE"], "STARTBATTLE", delay_before_click_sec=0.2, timeout_sec=2.0
@@ -335,18 +377,14 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                 # Extra wait to stabilize, then re-detect after the additional scroll(s)
                 time.sleep(POST_DETECT_WAIT)
 
-                # Re-detect after the additional scroll(s)
-                refreshed_point = None
-                for _ in range(REDETECT_RETRIES):
-                    refreshed_point = locate_center(TARGET_IMAGE)
-                    if refreshed_point:
-                        break
-                    time.sleep(REDETECT_PAUSE)
-
-                click_point = refreshed_point or point
+                # Only click after the target has been re-detected in a stable position.
+                refreshed_point = redetect_stable_target(TARGET_IMAGE)
+                if refreshed_point is None:
+                    print("[WARN] Target moved or vanished after scroll; skip click and keep scanning.", flush=True)
+                    continue
 
                 time.sleep(POST_FIND_DELAY)
-                pyautogui.click(click_point.x, click_point.y, clicks=3, interval=0.05)
+                click_point(refreshed_point, clicks=3, interval=0.05, hold=0.03)
                 print("[INFO] Done.")
                 return 0
 
