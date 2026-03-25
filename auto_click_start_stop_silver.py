@@ -468,10 +468,9 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         #adb shell setprop persist.sys.timezone Europe/Moscow //gmt+3
         #adb shell setprop persist.sys.timezone Africa/Cairo //gmt+2
         #adb shell setprop persist.sys.timezone Africa/Lagos  gmt+1
+        #adb shell setprop persist.sys.timezone Australia/Sydney gmt+10
         #adb shell settings put global auto_time_zone 0
-        run_adb(["shell", "settings", "put", "global", "auto_time_zone", "0"])
-        run_adb(["shell", "setprop", "persist.sys.timezone", "Africa/Lagos"])
-        
+
 
         time.sleep(0.2)
         wait_until_detect_then_delay_click_with_timeout(
@@ -485,6 +484,17 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             images["CROSS"], "CROSS", delay_before_click_sec=0.4, timeout_sec=1
         )
 
+
+        #adb shell setprop persist.sys.timezone Asia/Dubai   ///gmt+4
+        #adb shell setprop persist.sys.timezone Europe/Moscow //gmt+3
+        #adb shell setprop persist.sys.timezone Africa/Cairo //gmt+2
+        #adb shell setprop persist.sys.timezone Africa/Lagos  gmt+1
+        #adb shell setprop persist.sys.timezone Australia/Sydney gmt+10
+        #adb shell setprop persist.sys.timezone Asia/Ho_Chi_Minh +7
+
+        run_adb(["shell", "settings", "put", "global", "auto_time_zone", "0"])
+        run_adb(["shell", "setprop", "persist.sys.timezone", "Asia/Ho_Chi_Minh"])
+        
 
         time.sleep(0.3)
         if not wait_until_detect_then_delay_click_with_timeout(
@@ -552,11 +562,16 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             silverstart_found = wait_until_detect_then_delay_click_with_timeout(
                 images["SILVERSTART"], "SILVERSTART", delay_before_click_sec=0.6, timeout_sec=1
             )
-            
+
+            if not silverstart_found:
+                print("[SILVERSTART] not detected, scroll down once and resume silver search.")
+                perform_scroll_step()
+                continue
+
             wait_until_detect_then_delay_click_with_timeout(
                 images["SILVERSTART"], "SILVERSTART", delay_before_click_sec=0.6, timeout_sec=0.2
             )
-            
+
 
             if silverstart_found and "NOMANA" in images:
                 nomana_point = wait_until_detect_with_timeout(images["NOMANA"], "NOMANA", timeout_sec=1.5)
