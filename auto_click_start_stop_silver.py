@@ -29,7 +29,7 @@ POST_SCROLL_AMOUNT = -40   # Used only when mouse-wheel scrolling is enabled
 REDETECT_RETRIES = 8
 REDETECT_PAUSE = 0.08
 POST_DETECT_WAIT = 1.0
-PRE_SCROLL_DETECT_TIMEOUT = 0.9
+PRE_SCROLL_DETECT_TIMEOUT = 0.3
 TARGET_STABLE_TOLERANCE = 12
 TARGET_STABLE_HITS = 2
 USE_MOUSE_SCROLL = False
@@ -118,6 +118,7 @@ def build_image_map() -> dict[str, str]:
         "SILVERGET": BASE_DIR / "silverget.png",
         "SILVEROK": BASE_DIR / "silverok.png",
         "EVENTBOTTOM": BASE_DIR / "eventbottom.png",
+        "EVENTBACK": BASE_DIR / "event_back.png",
     }
 
     missing = [name for name, path in image_paths.items() if not path.exists()]
@@ -491,9 +492,11 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         #adb shell setprop persist.sys.timezone Africa/Lagos  gmt+1
         #adb shell setprop persist.sys.timezone Australia/Sydney gmt+10
         #adb shell setprop persist.sys.timezone Asia/Ho_Chi_Minh +7
+        #adb shell setprop persist.sys.timezone Asia/Dhaka +6
+        #EVENTBACK
 
         run_adb(["shell", "settings", "put", "global", "auto_time_zone", "0"])
-        run_adb(["shell", "setprop", "persist.sys.timezone", "Asia/Ho_Chi_Minh"])
+        run_adb(["shell", "setprop", "persist.sys.timezone", "Asia/Dhaka"])
         
 
         time.sleep(0.3)
@@ -544,6 +547,11 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                 if try_click_target_before_scroll(TARGET_IMAGE):
                     target_clicked = True
                     break
+
+
+                wait_until_detect_then_delay_click_with_timeout(
+                    images["EVENTBACK"], "EVENTBACK", delay_before_click_sec=0.2, timeout_sec=0.2
+                )
 
                 direction_label = "down" if scanning_down else "up"
                 print(f"[SCAN] iter {i}: scrolling {direction_label}...", flush=True)
