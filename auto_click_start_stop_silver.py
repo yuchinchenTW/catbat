@@ -493,10 +493,11 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         #adb shell setprop persist.sys.timezone Australia/Sydney gmt+10
         #adb shell setprop persist.sys.timezone Asia/Ho_Chi_Minh +7
         #adb shell setprop persist.sys.timezone Asia/Dhaka +6
+        #adb shell setprop persist.sys.timezone Asia/Karachi +5
         #EVENTBACK
 
         run_adb(["shell", "settings", "put", "global", "auto_time_zone", "0"])
-        run_adb(["shell", "setprop", "persist.sys.timezone", "Asia/Dhaka"])
+        run_adb(["shell", "setprop", "persist.sys.timezone", "Asia/Karachi"])
         
 
         time.sleep(0.3)
@@ -549,9 +550,14 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                     break
 
 
-                wait_until_detect_then_delay_click_with_timeout(
-                    images["EVENTBACK"], "EVENTBACK", delay_before_click_sec=0.2, timeout_sec=0.2
+                m_found = wait_until_detect_then_delay_click_with_timeout(
+                    images["WORLDM"], "WORLDM", delay_before_click_sec=0.2, timeout_sec=0.2
                 )
+
+                if m_found:
+                    wait_until_detect_then_delay_click_with_timeout(
+                        images["EVENTBACK"], "EVENTBACK", delay_before_click_sec=0.2, timeout_sec=0.2
+                    )
 
                 direction_label = "down" if scanning_down else "up"
                 print(f"[SCAN] iter {i}: scrolling {direction_label}...", flush=True)
