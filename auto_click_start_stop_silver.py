@@ -497,7 +497,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         #EVENTBACK
 
         run_adb(["shell", "settings", "put", "global", "auto_time_zone", "0"])
-        run_adb(["shell", "setprop", "persist.sys.timezone", "Asia/Karachi"])
+        run_adb(["shell", "setprop", "persist.sys.timezone", "Europe/Moscow"])
         
 
         time.sleep(0.3)
@@ -558,6 +558,12 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                     wait_until_detect_then_delay_click_with_timeout(
                         images["EVENTBACK"], "EVENTBACK", delay_before_click_sec=0.2, timeout_sec=0.2
                     )
+                    
+                    
+                    time.sleep(0.2)
+                    wait_until_detect_then_delay_click_with_timeout(
+                        images["CROSS"], "CROSS", delay_before_click_sec=0.6, timeout_sec=1
+                    )                    
 
                 direction_label = "down" if scanning_down else "up"
                 print(f"[SCAN] iter {i}: scrolling {direction_label}...", flush=True)
@@ -608,7 +614,19 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             wait_until_detect_then_delay_click_with_timeout(
                 images["SILVEROK"], "SILVEROK", delay_before_click_sec=0.2, timeout_sec=0.2
             )
-        
+     
+            time.sleep(0.2)
+            wait_until_detect_then_delay_click_with_timeout(
+                images["CROSS"], "CROSS", delay_before_click_sec=0.2, timeout_sec=1.5
+            )
+            time.sleep(0.1)
+            wait_until_detect_then_delay_click_with_timeout(
+                images["CROSS"], "CROSS", delay_before_click_sec=0.4, timeout_sec=0.2
+            )
+            wait_until_detect_then_delay_click_with_timeout(
+                images["CROSS"], "CROSS", delay_before_click_sec=0.4, timeout_sec=0.2
+            )
+ 
         
         return True
 
