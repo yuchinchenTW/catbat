@@ -4,7 +4,9 @@
 
 ## 功能
 
-- **全自動循環刷關** — 支援最多 1100 輪連續執行
+- **貓罐頭刷關** — 自動循環刷活動關卡取得貓罐頭（最多 2221 輪）
+- **銀卷刷關** — 自動捲動畫面搜尋銀卷關卡並刷關（最多 1099 輪）
+- **單次執行模式** — 執行一次完整刷關流程，適合測試與除錯
 - **圖像辨識點擊** — 使用 pyautogui 偵測 UI 元素（按鈕、彈窗、獎勵畫面）
 - **系統時間操控** — 透過 ADB 回調裝置時間以重置遊戲冷卻
 - **防火牆控制** — 自動啟動 NoRoot Firewall 阻斷/恢復網路連線
@@ -43,29 +45,40 @@ pyautogui
 
 3. 執行自動化腳本：
    ```bash
+   # 刷貓罐頭（需先停在活動關卡畫面）
    python auto_click_start_stop.py
+
+   # 刷銀卷（自動捲動尋找銀卷關卡）
+   python auto_click_start_stop_silver.py
+
+   # 單次執行（測試用）
+   python auto_click_start_stop_once.py
    ```
 
 ## 檔案結構
 
 ```
 catbat/
-├── auto_click_start_stop.py   # 主自動化腳本
-├── click_dodo_once.py         # 單次測試用輔助腳本
-├── readme.txt                 # 流程步驟文件
-├── *.png                      # UI 元素截圖（圖像辨識用）
-├── NoRoot Firewall.apk        # 防火牆 APK
-└── platform-tools-latest-windows.zip  # ADB 工具包
+├── auto_click_start_stop.py          # 刷貓罐頭（需停在活動關卡）
+├── auto_click_start_stop_once.py     # 單次執行版本（測試/除錯用）
+├── auto_click_start_stop_silver.py   # 刷銀卷（自動搜尋銀卷關卡）
+├── scroll_detect_click.py            # 捲動畫面偵測目標圖像並點擊
+├── click_dodo_once.py                # 單次偵測 dodo 並點擊的輔助腳本
+├── sleep.cmd                         # 鎖定螢幕（掛機用）
+├── readme.txt                        # 流程步驟文件
+├── *.png                             # UI 元素截圖（圖像辨識用）
+├── NoRoot Firewall.apk               # 防火牆 APK
+└── platform-tools-latest-windows.zip # ADB 工具包
 ```
 
 ## 設定參數
 
-主要參數在 `auto_click_start_stop.py` 頂部：
+主要參數在各腳本頂部：
 
 | 參數 | 預設值 | 說明 |
 |------|--------|------|
 | `ADB_SERIAL` | `emulator-5554` | 目標裝置 |
-| `CONFIDENCE` | `0.90` | 圖像辨識信心度門檻 |
+| `CONFIDENCE` | `0.90`（silver: `0.82`） | 圖像辨識信心度門檻 |
 | `POLL_INTERVAL` | `0.3` | 偵測輪詢間隔（秒） |
 | `ADB_RETRIES` | `5` | ADB 指令重試次數 |
 | `ADB_RETRY_DELAY` | `1.5` | 重試間隔（秒） |
@@ -79,7 +92,9 @@ catbat/
 5. 恢復網路 → 恢復自動時間 → 切換防火牆
 6. 偵測獎勵畫面（GOLD / 一般）→ 點擊結算序列
 7. 完成地圖 / 旅行 / 確認 → 進入下一循環
+
 ## Emulator
 
 - 使用雷電模擬器 (LDPlayer)
 - 解析度設定為 `960x540`
+- 需開啟 root 權限（設定 → 其他設定 → Root 權限）
