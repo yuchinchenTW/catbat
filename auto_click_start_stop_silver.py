@@ -457,12 +457,12 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             print("WORLDM2 miss -> restart next cycle")
             return True  # do not stop; move to next loop
 
-        time.sleep(0.3)
-        if not wait_until_detect_then_delay_click_with_timeout(
-            images["OK"], "OK", delay_before_click_sec=0.2, timeout_sec=2.0
-        ):
-            print("WORLDM2 miss -> restart next cycle")
-            return True  # do not stop; move to next loop            
+        #time.sleep(0.3)
+        #if not wait_until_detect_then_delay_click_with_timeout(
+        #    images["OK"], "OK", delay_before_click_sec=0.2, timeout_sec=2.0
+       # ):
+           # print("WORLDM2 miss -> restart next cycle")
+          #  return True  # do not stop; move to next loop            
             #STARTBATTLE
 
         #adb shell setprop persist.sys.timezone Asia/Dubai   ///gmt+4
@@ -497,7 +497,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         #EVENTBACK
 
         run_adb(["shell", "settings", "put", "global", "auto_time_zone", "0"])
-        run_adb(["shell", "setprop", "persist.sys.timezone", "Africa/Lagos"])
+        run_adb(["shell", "setprop", "persist.sys.timezone", "Asia/Dhaka"])
         
 
         time.sleep(0.3)

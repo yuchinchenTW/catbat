@@ -37,6 +37,7 @@ def build_image_map() -> dict[str, str]:
         "RESULT3": BASE_DIR / "result3.png",
         "RESULT4": BASE_DIR / "result4.png",
         "RESULT5": BASE_DIR / "result5.png",
+        "RESULT6": BASE_DIR / "result6.png",
         "MAP": BASE_DIR / "map.png",
         "TRAVEL": BASE_DIR / "travel.png",
         "YES": BASE_DIR / "yes.png",
@@ -270,12 +271,12 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         )
 
         # 10
-        time.sleep(0.3)
-        if not wait_until_detect_then_delay_click_with_timeout(
-            images["WORLDM2"], "WORLDM2", delay_before_click_sec=0.2, timeout_sec=2.0
-        ):
-            print("WORLDM2 miss -> restart next cycle")
-            return True  # do not stop; move to next loop
+       # time.sleep(0.3)
+       # if not wait_until_detect_then_delay_click_with_timeout(
+       #     images["WORLDM2"], "WORLDM2", delay_before_click_sec=0.2, timeout_sec=2.0
+       # ):
+       #     print("WORLDM2 miss -> restart next cycle")
+       #     return True  # do not stop; move to next loop
 
         # 11
         time.sleep(0.2)
@@ -359,6 +360,11 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
         wait_until_detect_then_delay_click_with_timeout(
             images["RESULT"], "RESULT", delay_before_click_sec=0.1, timeout_sec=0.2, click_kwargs=strong_single
+        )
+
+
+        wait_until_detect_then_delay_click_with_timeout(
+            images["RESULT6"], "RESULT6", delay_before_click_sec=0.1, timeout_sec=0.2, click_kwargs=strong_single
         )          
         # 20-28
         gold_found = wait_until_detect_then_delay_click_with_timeout(
