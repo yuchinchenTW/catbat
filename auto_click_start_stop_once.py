@@ -271,12 +271,12 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         )
 
         # 10
-       # time.sleep(0.3)
-       # if not wait_until_detect_then_delay_click_with_timeout(
-       #     images["WORLDM2"], "WORLDM2", delay_before_click_sec=0.2, timeout_sec=2.0
-       # ):
-       #     print("WORLDM2 miss -> restart next cycle")
-       #     return True  # do not stop; move to next loop
+        time.sleep(0.3)
+        if not wait_until_detect_then_delay_click_with_timeout(
+            images["WORLDM2"], "WORLDM2", delay_before_click_sec=0.2, timeout_sec=2.0
+        ):
+            print("WORLDM2 miss -> restart next cycle")
+            return True  # do not stop; move to next loop
 
         # 11
         time.sleep(0.2)

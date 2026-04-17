@@ -119,6 +119,8 @@ def build_image_map() -> dict[str, str]:
         "SILVEROK": BASE_DIR / "silverok.png",
         "EVENTBOTTOM": BASE_DIR / "eventbottom.png",
         "EVENTBACK": BASE_DIR / "event_back.png",
+        "CAT1": BASE_DIR / "cat1.png",
+        
     }
 
     missing = [name for name, path in image_paths.items() if not path.exists()]
@@ -457,12 +459,12 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             print("WORLDM2 miss -> restart next cycle")
             return True  # do not stop; move to next loop
 
-        #time.sleep(0.3)
-        #if not wait_until_detect_then_delay_click_with_timeout(
-        #    images["OK"], "OK", delay_before_click_sec=0.2, timeout_sec=2.0
-       # ):
-           # print("WORLDM2 miss -> restart next cycle")
-          #  return True  # do not stop; move to next loop            
+        time.sleep(0.3)
+        if not wait_until_detect_then_delay_click_with_timeout(
+            images["OK"], "OK", delay_before_click_sec=0.2, timeout_sec=2.0
+        ):
+            print("WORLDM2 miss -> restart next cycle")
+            return True  # do not stop; move to next loop            
             #STARTBATTLE
 
         #adb shell setprop persist.sys.timezone Asia/Dubai   ///gmt+4
@@ -490,6 +492,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         #adb shell setprop persist.sys.timezone Europe/Moscow //gmt+3
         #adb shell setprop persist.sys.timezone Africa/Cairo //gmt+2
         #adb shell setprop persist.sys.timezone Africa/Lagos  gmt+1
+        #adb shell setprop persist.sys.timezone Africa/Accra  gmt+0
         #adb shell setprop persist.sys.timezone Australia/Sydney gmt+10
         #adb shell setprop persist.sys.timezone Asia/Ho_Chi_Minh +7
         #adb shell setprop persist.sys.timezone Asia/Dhaka +6
@@ -497,7 +500,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         #EVENTBACK
 
         run_adb(["shell", "settings", "put", "global", "auto_time_zone", "0"])
-        run_adb(["shell", "setprop", "persist.sys.timezone", "Asia/Dhaka"])
+        #run_adb(["shell", "setprop", "persist.sys.timezone", "Africa/Accra"])
         
 
         time.sleep(0.3)
@@ -512,7 +515,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
         while True:
         
-            time.sleep(0.3)
+            time.sleep(0.7)
             wait_until_detect_then_delay_click_with_timeout(
                 images["STARTBATTLE"], "STARTBATTLE", delay_before_click_sec=0.2, timeout_sec=2.0
             )        
@@ -525,7 +528,15 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
             )  
             wait_until_detect_then_delay_click_with_timeout(
                 images["STARTBATTLE"], "STARTBATTLE", delay_before_click_sec=0.2, timeout_sec=0.2
-            )              
+            )   
+
+            wait_until_detect_then_delay_click_with_timeout(
+                images["STARTBATTLE"], "STARTBATTLE", delay_before_click_sec=0.2, timeout_sec=0.2
+            )   
+
+            wait_until_detect_then_delay_click_with_timeout(
+                images["STARTBATTLE"], "STARTBATTLE", delay_before_click_sec=0.2, timeout_sec=0.2
+            )               
             print("[SCAN] Starting scroll-search for target image...", flush=True)
 
             target_clicked = False
@@ -548,7 +559,19 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                 if try_click_target_before_scroll(TARGET_IMAGE):
                     target_clicked = True
                     break
+                    
+                m_found2 = wait_until_detect_then_delay_click_with_timeout(
+                    images["CAT1"], "CAT1", delay_before_click_sec=0.2, timeout_sec=0.2
+                )
+                if m_found2:
 
+                   wait_until_detect_then_delay_click_with_timeout(
+                        images["EVENTBACK"], "EVENTBACK", delay_before_click_sec=0.2, timeout_sec=0.2
+                    )
+
+                   wait_until_detect_then_delay_click_with_timeout(
+                        images["EVENTBACK"], "EVENTBACK", delay_before_click_sec=0.2, timeout_sec=0.2
+                    )
 
                 m_found = wait_until_detect_then_delay_click_with_timeout(
                     images["WORLDM"], "WORLDM", delay_before_click_sec=0.2, timeout_sec=0.2
@@ -592,6 +615,17 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                 images["SILVERSTART"], "SILVERSTART", delay_before_click_sec=0.6, timeout_sec=0.2
             )
 
+            wait_until_detect_then_delay_click_with_timeout(
+                images["SILVERSTART"], "SILVERSTART", delay_before_click_sec=0.6, timeout_sec=0.2
+            )
+
+            wait_until_detect_then_delay_click_with_timeout(
+                images["SILVERSTART"], "SILVERSTART", delay_before_click_sec=0.6, timeout_sec=0.2
+            )
+
+            wait_until_detect_then_delay_click_with_timeout(
+                images["SILVERSTART"], "SILVERSTART", delay_before_click_sec=0.6, timeout_sec=0.2
+            )
 
             if silverstart_found and "NOMANA" in images:
                 nomana_point = wait_until_detect_with_timeout(images["NOMANA"], "NOMANA", timeout_sec=1.5)
