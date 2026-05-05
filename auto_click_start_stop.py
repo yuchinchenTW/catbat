@@ -212,6 +212,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         ("RESULT3", 0.2, strong_single),
         ("RESULT4", 0.2, strong_single),
         ("MAP", 3, strong_single),
+        ("MAP", 3, strong_single),
         ("TRAVEL", 3, strong_single),
         ("YES", 1.2, strong_single),
         ("YES", 1.2, strong_single),
@@ -267,13 +268,15 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         # 9
         time.sleep(0.3)
         wait_until_detect_then_delay_click_with_timeout(
-            images["WORLDM"], "WORLDM", delay_before_click_sec=0.1, timeout_sec=0.2
+            images["WORLDM"], "WORLDM", delay_before_click_sec=0.8, timeout_sec=0.8
         )
-
+        wait_until_detect_then_delay_click_with_timeout(
+            images["WORLDM"], "WORLDM", delay_before_click_sec=0.8, timeout_sec=0.8
+        )
         # 10
         time.sleep(0.3)
         if not wait_until_detect_then_delay_click_with_timeout(
-            images["WORLDM2"], "WORLDM2", delay_before_click_sec=0.2, timeout_sec=2.0
+            images["WORLDM2"], "WORLDM2", delay_before_click_sec=0.4, timeout_sec=2.0
         ):
             print("WORLDM2 miss -> restart next cycle")
             return True  # do not stop; move to next loop
@@ -390,6 +393,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                 ("CROSS2", 0.1, strong_single),
                 ("CROSS2", 0.1, strong_single),
                 ("MAP", 2, strong_single),
+                ("MAP", 2, strong_single),
                 ("TRAVEL", 0.5, strong_single),
                 ("TRAVEL", 0.1, strong_single),
                 ("YES", 2, strong_single),
@@ -455,6 +459,11 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                     map_ok = wait_until_detect_then_delay_click_with_timeout(
                         images["MAP"], "MAP", delay_before_click_sec=0.33, timeout_sec=map_timeout, click_kwargs=strong_single
                     )
+                    
+                    wait_until_detect_then_delay_click_with_timeout(
+                        images["MAP"], "MAP", delay_before_click_sec=0.1, timeout_sec=0.3, click_kwargs=strong_single
+                    )                    
+                    
                     if not map_ok:
                         for _ in range(3):
                             time.sleep(0.2)
@@ -508,6 +517,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
                 ("RESULT5", 0.2, strong_single),
                 ("CROSS2", 0.1, strong_single),
                 ("CROSS2", 0.1, strong_single),
+                ("MAP", 2, strong_single),
                 ("MAP", 2, strong_single),
                 ("TRAVEL", 0.5, strong_single),
                 ("TRAVEL", 0.1, strong_single),

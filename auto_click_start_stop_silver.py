@@ -500,7 +500,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         #EVENTBACK
 
         run_adb(["shell", "settings", "put", "global", "auto_time_zone", "0"])
-        #run_adb(["shell", "setprop", "persist.sys.timezone", "Africa/Accra"])
+        run_adb(["shell", "setprop", "persist.sys.timezone", "Africa/Accra"])
         
 
         time.sleep(0.3)
