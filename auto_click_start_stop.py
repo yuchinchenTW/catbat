@@ -61,6 +61,16 @@ def build_image_map() -> dict[str, str]:
     return {name: str(path) for name, path in image_paths.items()}
 
 
+def run_capture_text(cmd: list[str], **kwargs) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        **kwargs,
+    )
+
 def _print_process_output(result: subprocess.CompletedProcess) -> None:
     if result.stdout:
         print(result.stdout, end="")
@@ -83,14 +93,12 @@ def kill_adb_processes() -> None:
 def recover_adb_connection() -> None:
     print("[ADB] recovering connection...")
     kill_adb_processes()
-    subprocess.run(["adb", "kill-server"], capture_output=True, text=True, check=False)
-    subprocess.run(["adb", "start-server"], capture_output=True, text=True, check=False)
-    subprocess.run(["adb", "reconnect", "offline"], capture_output=True, text=True, check=False)
+    run_capture_text(["adb", "kill-server"], check=False)
+    run_capture_text(["adb", "start-server"], check=False)
+    run_capture_text(["adb", "reconnect", "offline"], check=False)
     try:
-        subprocess.run(
+        run_capture_text(
             ["adb", "-s", ADB_SERIAL, "wait-for-device"],
-            capture_output=True,
-            text=True,
             check=False,
             timeout=ADB_WAIT_TIMEOUT,
         )
@@ -101,7 +109,7 @@ def recover_adb_connection() -> None:
 def run_cmd(cmd: list[str], retries: int = ADB_RETRIES) -> None:
     for attempt in range(1, retries + 1):
         print(f"[CMD] {' '.join(cmd)} (attempt {attempt}/{retries})")
-        result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+        result = run_capture_text(cmd, check=False)
         _print_process_output(result)
         if result.returncode == 0:
             return
