@@ -72,8 +72,8 @@ def kill_adb_processes() -> None:
     try:
         subprocess.run(
             ["taskkill", "/F", "/IM", "adb.exe"],
-            capture_output=True,
-            text=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
             check=False,
         )
     except FileNotFoundError:
