@@ -68,8 +68,21 @@ def _print_process_output(result: subprocess.CompletedProcess) -> None:
         print(result.stderr, end="")
 
 
+def kill_adb_processes() -> None:
+    try:
+        subprocess.run(
+            ["taskkill", "/F", "/IM", "adb.exe"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except FileNotFoundError:
+        pass
+
+
 def recover_adb_connection() -> None:
     print("[ADB] recovering connection...")
+    kill_adb_processes()
     subprocess.run(["adb", "kill-server"], capture_output=True, text=True, check=False)
     subprocess.run(["adb", "start-server"], capture_output=True, text=True, check=False)
     subprocess.run(["adb", "reconnect", "offline"], capture_output=True, text=True, check=False)
