@@ -129,16 +129,67 @@ def run_adb(args: list[str]) -> None:
     run_cmd(["adb", "-s", ADB_SERIAL, *args])
 
 
+_launcher_activity_cache: dict[str, str] = {}
+
+
+def _resolve_launcher_activity(package_name: str) -> str | None:
+    if package_name in _launcher_activity_cache:
+        return _launcher_activity_cache[package_name]
+
+    resolvers = (
+        ["cmd", "package", "resolve-activity", "--brief",
+         "-c", "android.intent.category.LAUNCHER", package_name],
+        ["pm", "resolve-activity", "--brief",
+         "-c", "android.intent.category.LAUNCHER", package_name],
+    )
+    for shell_cmd in resolvers:
+        result = run_capture_text(
+            ["adb", "-s", ADB_SERIAL, "shell", *shell_cmd], check=False
+        )
+        if result.returncode != 0 or not result.stdout:
+            continue
+        for line in result.stdout.splitlines():
+            line = line.strip()
+            if "/" in line and " " not in line and not line.startswith("priority="):
+                _launcher_activity_cache[package_name] = line
+                print(f"[LAUNCH] resolved launcher for {package_name}: {line}")
+                return line
+    return None
+
+
 def launch_package(package_name: str) -> None:
+    activity = _resolve_launcher_activity(package_name)
+    if activity:
+        run_adb(["shell", "am", "start", "-n", activity])
+        return
+
+    try:
+        run_adb(
+            [
+                "shell",
+                "monkey",
+                "-p",
+                package_name,
+                "-c",
+                "android.intent.category.LAUNCHER",
+                "1",
+            ]
+        )
+        return
+    except subprocess.CalledProcessError:
+        print(f"[WARN] monkey unavailable, falling back to am start intent.")
+
     run_adb(
         [
             "shell",
-            "monkey",
-            "-p",
-            package_name,
+            "am",
+            "start",
+            "-a",
+            "android.intent.action.MAIN",
             "-c",
             "android.intent.category.LAUNCHER",
-            "1",
+            "-p",
+            package_name,
         ]
     )
 
