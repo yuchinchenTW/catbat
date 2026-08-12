@@ -305,7 +305,12 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         launch_package(GAME_PACKAGE)
 
         # 4
-        wait_until_detect(images["SKIP"], "SKIP-DETECT-1")
+        #wait_until_detect(images["SKIP"], "SKIP-DETECT-1")
+        
+        wait_until_detect_then_delay_click_with_timeout(
+            images["SKIP"], "SKIP-DETECT-1", delay_before_click_sec=1, timeout_sec=5, click_kwargs=heavy_startm, reuse_detect_point=True
+        )        
+        
         launch_package(FIREWALL_PACKAGE)
 
         # 5
