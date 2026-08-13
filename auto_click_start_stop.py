@@ -312,7 +312,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         )        
         
         launch_package(FIREWALL_PACKAGE)
-
+        time.sleep(0.8)
         # 5
         wait_until_detect_and_click(images["START_GREEN"], "START-GREEN")
 
@@ -409,11 +409,12 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         #adb shell su 0 am force-stop app.greyshirts.firewall 
 
         # 18
+        time.sleep(0.6)
         wait_until_detect_and_click(images["START_RED"], "START-RED")
        # run_adb(["shell", "su", "0", "am", "force-stop", "app.greyshirts.firewall"])
 
         # 19
-        time.sleep(0.1)
+        time.sleep(0.4)
         launch_package(GAME_PACKAGE)
         #time.sleep(1)
 
