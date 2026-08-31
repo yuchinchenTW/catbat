@@ -411,7 +411,7 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
         # 18
         time.sleep(0.6)
 
-        if not wait_until_detect_then_delay_click_with_timeout(
+        wait_until_detect_then_delay_click_with_timeout(
             images["START_RED"], "START-RED", delay_before_click_sec=0.4, timeout_sec=2.0
         )        
         
