@@ -330,9 +330,9 @@ def run_cycle(images: dict[str, str], cycle_idx: int) -> bool:
 
         time.sleep(0.1)
         if not wait_until_detect_then_delay_click_with_timeout(
-            images["SKIP"], "SKIP-CLICK-2", delay_before_click_sec=0.3, timeout_sec=6.0, click_kwargs=triple_dodo
+            images["SKIP"], "SKIP-CLICK-2", delay_before_click_sec=0.3, timeout_sec=8.0
         ):
-            print("DODO first miss -> restart next cycle")
+            print("SKIP-CLICK-2 first miss -> restart next cycle")
             return True  # do not stop; move to next loop        
         
         wait_until_detect_then_delay_click_with_timeout(
